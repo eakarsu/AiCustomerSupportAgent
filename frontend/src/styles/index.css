@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-gray-50 text-gray-900;
+}
+
+.card-hover {
+  @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-1 cursor-pointer;
+}
+
+.btn-primary {
+  @apply bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors;
+}
+
+.input-field {
+  @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none;
+}
+
+.status-open {
+  @apply bg-yellow-100 text-yellow-800;
+}
+
+.status-pending {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.status-resolved {
+  @apply bg-green-100 text-green-800;
+}
+
+.status-closed {
+  @apply bg-gray-100 text-gray-800;
+}
+
+.priority-low {
+  @apply bg-gray-100 text-gray-800;
+}
+
+.priority-medium {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.priority-high {
+  @apply bg-orange-100 text-orange-800;
+}
+
+.priority-urgent {
+  @apply bg-red-100 text-red-800;
+}
+
+.sidebar-link {
+  @apply flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-indigo-50 hover:text-indigo-600 rounded-lg transition-colors;
+}
+
+.sidebar-link.active {
+  @apply bg-indigo-100 text-indigo-600 font-medium;
+}
+
+.table-row {
+  @apply hover:bg-gray-50 cursor-pointer transition-colors;
+}
+
+.modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+}
+
+.modal-content {
+  @apply bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto;
+}
+
+.chat-message-user {
+  @apply bg-indigo-600 text-white ml-auto;
+}
+
+.chat-message-ai {
+  @apply bg-gray-100 text-gray-800 mr-auto;
+}

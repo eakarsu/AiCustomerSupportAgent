@@ -1,0 +1,221 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("agent")
+  avatar    String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tickets         Ticket[]
+  messages        Message[]
+  responses       CannedResponse[]
+  knowledgeBase   KnowledgeArticle[]
+}
+
+model Customer {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  name        String
+  phone       String?
+  company     String?
+  avatar      String?
+  notes       String?
+  tier        String   @default("standard")
+  totalSpent  Float    @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tickets     Ticket[]
+  messages    Message[]
+  calls       Call[]
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  color       String   @default("#6366f1")
+  icon        String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tickets          Ticket[]
+  knowledgeArticles KnowledgeArticle[]
+}
+
+model Ticket {
+  id          String   @id @default(uuid())
+  subject     String
+  description String
+  status      String   @default("open")
+  priority    String   @default("medium")
+  source      String   @default("web")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  resolvedAt  DateTime?
+
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id])
+
+  assigneeId  String?
+  assignee    User?    @relation(fields: [assigneeId], references: [id])
+
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+
+  messages    Message[]
+  tags        TicketTag[]
+  calls       Call[]
+}
+
+model Message {
+  id          String   @id @default(uuid())
+  content     String
+  isFromAgent Boolean  @default(false)
+  isAiGenerated Boolean @default(false)
+  sentiment   String?
+  createdAt   DateTime @default(now())
+
+  ticketId    String
+  ticket      Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  senderId    String?
+  senderUser  User?    @relation(fields: [senderId], references: [id])
+
+  customerId  String?
+  customer    Customer? @relation(fields: [customerId], references: [id])
+}
+
+model Tag {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  color       String   @default("#3b82f6")
+  createdAt   DateTime @default(now())
+
+  tickets     TicketTag[]
+}
+
+model TicketTag {
+  ticketId    String
+  ticket      Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  tagId       String
+  tag         Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([ticketId, tagId])
+}
+
+model KnowledgeArticle {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+  summary     String?
+  views       Int      @default(0)
+  helpful     Int      @default(0)
+  notHelpful  Int      @default(0)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+}
+
+model CannedResponse {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+  shortcut    String?
+  useCount    Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id])
+}
+
+model Analytics {
+  id                String   @id @default(uuid())
+  date              DateTime @default(now())
+  totalTickets      Int      @default(0)
+  resolvedTickets   Int      @default(0)
+  avgResponseTime   Float    @default(0)
+  avgResolutionTime Float    @default(0)
+  customerSatisfaction Float @default(0)
+  aiResolutions     Int      @default(0)
+}
+
+model AiConversation {
+  id          String   @id @default(uuid())
+  sessionId   String
+  question    String
+  response    String
+  intent      String?
+  confidence  Float?
+  wasHelpful  Boolean?
+  createdAt   DateTime @default(now())
+}
+
+model Setting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+
+model Call {
+  id              String   @id @default(uuid())
+  twilioCallSid   String   @unique
+  callerPhone     String
+  calledPhone     String
+  direction       String   @default("inbound")
+  status          String   @default("ringing")
+  startedAt       DateTime @default(now())
+  endedAt         DateTime?
+  duration        Int      @default(0)
+  recordingUrl    String?
+  summary         String?
+  sentiment       String?
+  wasTransferred  Boolean  @default(false)
+  transferredTo   String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  customerId      String?
+  customer        Customer? @relation(fields: [customerId], references: [id])
+
+  ticketId        String?
+  ticket          Ticket?   @relation(fields: [ticketId], references: [id])
+
+  transcripts     CallTranscript[]
+}
+
+model CallTranscript {
+  id          String   @id @default(uuid())
+  speaker     String
+  content     String
+  confidence  Float?
+  timestamp   DateTime @default(now())
+
+  callId      String
+  call        Call     @relation(fields: [callId], references: [id], onDelete: Cascade)
+}
