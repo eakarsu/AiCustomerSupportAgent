@@ -1,5 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
+import ErrorBoundary from './components/ErrorBoundary';
+import ToastContainer from './components/Toast';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
@@ -22,6 +25,12 @@ import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import Calls from './pages/Calls';
 import CallDetail from './pages/CallDetail';
+import AiTicketClassifier from './pages/AiTicketClassifier';
+import AiResolutionPredictor from './pages/AiResolutionPredictor';
+import AiKnowledgeSuggester from './pages/AiKnowledgeSuggester';
+import AiQualityScorer from './pages/AiQualityScorer';
+import AiEscalationRouter from './pages/AiEscalationRouter';
+import AiShoppingAssistant from './pages/AiShoppingAssistant';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -83,6 +92,13 @@ function AppRoutes() {
         <Route path="ai-chat" element={<AiChat />} />
         <Route path="analytics" element={<Analytics />} />
         <Route path="settings" element={<Settings />} />
+        {/* AI Features */}
+        <Route path="ai-classifier" element={<AiTicketClassifier />} />
+        <Route path="ai-predictor" element={<AiResolutionPredictor />} />
+        <Route path="ai-knowledge" element={<AiKnowledgeSuggester />} />
+        <Route path="ai-quality" element={<AiQualityScorer />} />
+        <Route path="ai-escalation" element={<AiEscalationRouter />} />
+        <Route path="ai-shopping" element={<AiShoppingAssistant />} />
       </Route>
     </Routes>
   );
@@ -90,9 +106,14 @@ function AppRoutes() {
 
 function App() {
   return (
-    <AuthProvider>
-      <AppRoutes />
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ToastProvider>
+          <AppRoutes />
+          <ToastContainer />
+        </ToastProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

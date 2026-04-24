@@ -81,3 +81,49 @@ body {
 .chat-message-ai {
   @apply bg-gray-100 text-gray-800 mr-auto;
 }
+
+/* Toast slide-in animation */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Responsive sidebar */
+@media (max-width: 768px) {
+  .sidebar-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 z-40;
+  }
+}
+
+/* Checkbox styles */
+.checkbox-primary {
+  @apply w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500;
+}
+
+/* Sort header */
+.sort-header {
+  @apply flex items-center gap-1 cursor-pointer hover:text-indigo-600 transition-colors select-none;
+}
+
+/* Form validation */
+.input-error {
+  @apply border-red-500 focus:ring-red-500;
+}
+
+.error-text {
+  @apply text-red-600 text-xs mt-1;
+}
+
+.btn-danger {
+  @apply bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors;
+}

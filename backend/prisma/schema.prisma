@@ -18,10 +18,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tickets         Ticket[]
-  messages        Message[]
-  responses       CannedResponse[]
-  knowledgeBase   KnowledgeArticle[]
+  tickets              Ticket[]
+  messages             Message[]
+  responses            CannedResponse[]
+  knowledgeBase        KnowledgeArticle[]
+  emailVerifications   EmailVerification[]
 }
 
 model Customer {
@@ -80,6 +81,13 @@ model Ticket {
   messages    Message[]
   tags        TicketTag[]
   calls       Call[]
+
+  // AI feature relations
+  classifications       AiTicketClassification[]
+  resolutionPredictions AiResolutionPrediction[]
+  knowledgeSuggestions  AiKnowledgeSuggestion[]
+  qualityScores         AiQualityScore[]
+  escalationRoutings    AiEscalationRouting[]
 }
 
 model Message {
@@ -218,4 +226,191 @@ model CallTranscript {
 
   callId      String
   call        Call     @relation(fields: [callId], references: [id], onDelete: Cascade)
+}
+
+// AI Ticket Classification
+model AiTicketClassification {
+  id              String   @id @default(uuid())
+  ticketId        String?
+  subject         String
+  description     String
+  suggestedCategory String
+  suggestedPriority String
+  suggestedTags   String[]
+  confidence      Float
+  reasoning       String?
+  sentiment       String?
+  urgencyScore    Int      @default(5)
+  createdAt       DateTime @default(now())
+
+  ticket          Ticket?  @relation(fields: [ticketId], references: [id])
+}
+
+// AI Resolution Predictions
+model AiResolutionPrediction {
+  id                    String   @id @default(uuid())
+  ticketId              String?
+  subject               String
+  description           String
+  predictedResolution   String
+  estimatedTimeHours    Float
+  suggestedSteps        String[]
+  similarTicketsCount   Int      @default(0)
+  confidence            Float
+  predictedOutcome      String?
+  createdAt             DateTime @default(now())
+
+  ticket                Ticket?  @relation(fields: [ticketId], references: [id])
+}
+
+// AI Knowledge Suggestions
+model AiKnowledgeSuggestion {
+  id                  String   @id @default(uuid())
+  query               String
+  ticketId            String?
+  suggestedArticles   Json
+  generatedAnswer     String?
+  confidence          Float
+  wasHelpful          Boolean?
+  createdAt           DateTime @default(now())
+
+  ticket              Ticket?  @relation(fields: [ticketId], references: [id])
+}
+
+// AI Quality Scores
+model AiQualityScore {
+  id                  String   @id @default(uuid())
+  ticketId            String?
+  responseId          String?
+  overallScore        Float
+  clarityScore        Float
+  helpfulnessScore    Float
+  professionalismScore Float
+  completenessScore   Float
+  feedback            String?
+  improvements        String[]
+  createdAt           DateTime @default(now())
+
+  ticket              Ticket?  @relation(fields: [ticketId], references: [id])
+}
+
+// AI Escalation Routing
+model AiEscalationRouting {
+  id                  String   @id @default(uuid())
+  ticketId            String?
+  subject             String
+  description         String
+  shouldEscalate      Boolean
+  escalationReason    String?
+  suggestedTeam       String?
+  suggestedAgent      String?
+  urgencyLevel        String
+  customerSentiment   String?
+  riskScore           Float
+  confidence          Float
+  createdAt           DateTime @default(now())
+
+  ticket              Ticket?  @relation(fields: [ticketId], references: [id])
+}
+
+// AI Shopping Assistant Conversations
+model AiShoppingConversation {
+  id              String   @id @default(uuid())
+  sessionId       String
+  customerMessage String
+  assistantResponse String
+  intent          String?
+  productRecommendations Json?
+  cartActions     Json?
+  orderInfo       Json?
+  confidence      Float?
+  createdAt       DateTime @default(now())
+}
+
+// E-commerce Products for Shopping Assistant
+model Product {
+  id              String   @id @default(uuid())
+  name            String
+  description     String
+  price           Float
+  category        String
+  imageUrl        String?
+  stock           Int      @default(0)
+  rating          Float    @default(0)
+  reviewCount     Int      @default(0)
+  tags            String[]
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Shopping Cart
+model ShoppingCart {
+  id          String   @id @default(uuid())
+  sessionId   String
+  items       Json
+  totalAmount Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Password Reset Tokens
+model PasswordReset {
+  id        String   @id @default(uuid())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// Email Verification Tokens
+model EmailVerification {
+  id        String   @id @default(uuid())
+  userId    String
+  email     String
+  token     String   @unique
+  verified  Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+// Blacklisted JWT Tokens (for logout)
+model BlacklistedToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+// Audit Log
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String?
+  details   String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+}
+
+// Orders
+model Order {
+  id              String   @id @default(uuid())
+  orderNumber     String   @unique
+  sessionId       String?
+  customerId      String?
+  customerEmail   String
+  customerName    String
+  items           Json
+  totalAmount     Float
+  status          String   @default("pending")
+  shippingAddress String?
+  trackingNumber  String?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

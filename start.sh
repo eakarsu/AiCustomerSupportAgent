@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# AI Customer Support Agent - Start Script
-# This script initializes and starts the application
+# AI Customer Support Agent - Start Script with Hot Reload
+# This script initializes and starts the application with code monitoring
 
 set -e
 
@@ -10,26 +10,44 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+MAGENTA='\033[0;35m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}"
 echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║         AI Customer Support Agent - Startup Script           ║"
+echo "║     AI Customer Support Agent - Startup Script v2.0          ║"
+echo "║              With Hot Reload & Full AI Features              ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
 
-# Define ports
+# Define ports (avoiding port 5000 which is used by macOS AirPlay)
 BACKEND_PORT=5001
 FRONTEND_PORT=3000
 
 # Function to kill process on a specific port
 kill_port() {
     local port=$1
+    echo -e "${YELLOW}Checking port $port...${NC}"
+
+    # Try lsof first
     local pid=$(lsof -ti:$port 2>/dev/null)
     if [ -n "$pid" ]; then
         echo -e "${YELLOW}Killing process on port $port (PID: $pid)...${NC}"
         kill -9 $pid 2>/dev/null || true
         sleep 1
+    fi
+
+    # Also try fuser as backup
+    if command -v fuser >/dev/null 2>&1; then
+        fuser -k $port/tcp 2>/dev/null || true
+    fi
+
+    # Verify port is free
+    if lsof -ti:$port >/dev/null 2>&1; then
+        echo -e "${RED}Warning: Port $port may still be in use${NC}"
+    else
+        echo -e "${GREEN}✓ Port $port is free${NC}"
     fi
 }
 
@@ -38,23 +56,16 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# Function to check PostgreSQL connection
-check_postgres() {
-    if command_exists psql; then
-        if psql -h localhost -U postgres -c '\q' 2>/dev/null; then
-            return 0
-        fi
-    fi
-    return 1
-}
-
-echo -e "${YELLOW}Step 1: Cleaning up used ports...${NC}"
+echo -e "${CYAN}Step 1: Cleaning up used ports...${NC}"
 kill_port $BACKEND_PORT
 kill_port $FRONTEND_PORT
+# Also clean up any other common ports that might conflict
+kill_port 5002
+kill_port 5003
 echo -e "${GREEN}✓ Ports cleaned${NC}"
 echo ""
 
-echo -e "${YELLOW}Step 2: Checking prerequisites...${NC}"
+echo -e "${CYAN}Step 2: Checking prerequisites...${NC}"
 
 # Check Node.js
 if ! command_exists node; then
@@ -75,7 +86,7 @@ echo -e "${GREEN}✓ npm installed: $NPM_VERSION${NC}"
 # Check .env file in root folder
 if [ ! -f ".env" ]; then
     echo -e "${YELLOW}Creating .env file...${NC}"
-    cat > .env << EOF
+    cat > .env << 'EOF'
 # Database
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/ai_support?schema=public"
 
@@ -85,12 +96,17 @@ JWT_SECRET="your-super-secret-jwt-key-change-in-production"
 # OpenRouter API Key (required for AI features)
 OPENROUTER_API_KEY="your-openrouter-api-key-here"
 
-# AI Model (optional, defaults to claude-3-haiku)
-AI_MODEL="anthropic/claude-3-haiku"
+# OpenRouter AI Model
+OPENROUTER_MODEL="anthropic/claude-haiku-4.5"
 
-# Server
+# Server Configuration (avoiding port 5000 - used by macOS AirPlay)
 PORT=5001
 APP_URL="http://localhost:3000"
+
+# Twilio Configuration (optional - for voice features)
+TWILIO_ACCOUNT_SID=""
+TWILIO_AUTH_TOKEN=""
+TWILIO_PHONE_NUMBER=""
 EOF
     echo -e "${GREEN}✓ Created .env file${NC}"
     echo -e "${YELLOW}⚠ Please update the OPENROUTER_API_KEY in .env with your actual key${NC}"
@@ -100,13 +116,20 @@ fi
 
 echo ""
 
-echo -e "${YELLOW}Step 3: Installing backend dependencies...${NC}"
+echo -e "${CYAN}Step 3: Installing backend dependencies...${NC}"
 cd backend
+
+# Install nodemon globally for hot reloading if not present
+if ! command_exists nodemon; then
+    echo -e "${YELLOW}Installing nodemon for hot reload...${NC}"
+    npm install -g nodemon
+fi
+
 npm install
 echo -e "${GREEN}✓ Backend dependencies installed${NC}"
 echo ""
 
-echo -e "${YELLOW}Step 4: Setting up database...${NC}"
+echo -e "${CYAN}Step 4: Setting up database...${NC}"
 # Generate Prisma client
 npm run db:generate
 echo -e "${GREEN}✓ Prisma client generated${NC}"
@@ -122,14 +145,14 @@ npm run db:push || {
 echo -e "${GREEN}✓ Database schema pushed${NC}"
 echo ""
 
-echo -e "${YELLOW}Step 5: Seeding database with sample data...${NC}"
+echo -e "${CYAN}Step 5: Seeding database with sample data...${NC}"
 npm run db:seed
-echo -e "${GREEN}✓ Database seeded with sample data${NC}"
+echo -e "${GREEN}✓ Database seeded with sample data (15+ items per feature)${NC}"
 echo ""
 
 cd ..
 
-echo -e "${YELLOW}Step 6: Installing frontend dependencies...${NC}"
+echo -e "${CYAN}Step 6: Installing frontend dependencies...${NC}"
 cd frontend
 npm install
 echo -e "${GREEN}✓ Frontend dependencies installed${NC}"
@@ -137,13 +160,13 @@ echo ""
 
 cd ..
 
-echo -e "${YELLOW}Step 7: Starting application...${NC}"
+echo -e "${CYAN}Step 7: Starting application with hot reload...${NC}"
 echo ""
 
-# Start backend in background
-echo -e "${BLUE}Starting backend server on port $BACKEND_PORT...${NC}"
+# Start backend with nodemon for hot reload
+echo -e "${BLUE}Starting backend server on port $BACKEND_PORT with hot reload...${NC}"
 cd backend
-npm start &
+npx nodemon --watch src --ext js,json src/index.js &
 BACKEND_PID=$!
 cd ..
 
@@ -155,10 +178,10 @@ if ! kill -0 $BACKEND_PID 2>/dev/null; then
     echo -e "${RED}✗ Backend failed to start${NC}"
     exit 1
 fi
-echo -e "${GREEN}✓ Backend running (PID: $BACKEND_PID)${NC}"
+echo -e "${GREEN}✓ Backend running with hot reload (PID: $BACKEND_PID)${NC}"
 
-# Start frontend in background
-echo -e "${BLUE}Starting frontend server on port $FRONTEND_PORT...${NC}"
+# Start frontend with Vite dev server (has built-in hot reload)
+echo -e "${BLUE}Starting frontend server on port $FRONTEND_PORT with hot reload...${NC}"
 cd frontend
 npm run dev &
 FRONTEND_PID=$!
@@ -172,12 +195,12 @@ if ! kill -0 $FRONTEND_PID 2>/dev/null; then
     echo -e "${RED}✗ Frontend failed to start${NC}"
     exit 1
 fi
-echo -e "${GREEN}✓ Frontend running (PID: $FRONTEND_PID)${NC}"
+echo -e "${GREEN}✓ Frontend running with hot reload (PID: $FRONTEND_PID)${NC}"
 
 echo ""
 echo -e "${GREEN}"
 echo "╔══════════════════════════════════════════════════════════════╗"
-echo "║                 Application Started Successfully              ║"
+echo "║              Application Started Successfully                 ║"
 echo "╠══════════════════════════════════════════════════════════════╣"
 echo "║                                                              ║"
 echo "║  Frontend:  http://localhost:$FRONTEND_PORT                        ║"
@@ -185,9 +208,23 @@ echo "║  Backend:   http://localhost:$BACKEND_PORT                         ║
 echo "║  API Docs:  http://localhost:$BACKEND_PORT/api/health              ║"
 echo "║                                                              ║"
 echo "╠══════════════════════════════════════════════════════════════╣"
+echo "║  🔥 HOT RELOAD ENABLED                                       ║"
+echo "║  Backend: nodemon watching src/ folder                       ║"
+echo "║  Frontend: Vite HMR (Hot Module Replacement)                 ║"
+echo "║                                                              ║"
+echo "╠══════════════════════════════════════════════════════════════╣"
 echo "║  Login Credentials:                                          ║"
 echo "║  Email:    admin@company.com                                 ║"
 echo "║  Password: password123                                       ║"
+echo "║                                                              ║"
+echo "╠══════════════════════════════════════════════════════════════╣"
+echo "║  🤖 AI Features (OpenRouter):                                ║"
+echo "║  - AI Ticket Classifier                                      ║"
+echo "║  - AI Resolution Predictor                                   ║"
+echo "║  - AI Knowledge Suggester                                    ║"
+echo "║  - AI Quality Scorer                                         ║"
+echo "║  - AI Escalation Router                                      ║"
+echo "║  - AI Shopping Assistant                                     ║"
 echo "║                                                              ║"
 echo "╠══════════════════════════════════════════════════════════════╣"
 echo "║  Press Ctrl+C to stop all services                          ║"

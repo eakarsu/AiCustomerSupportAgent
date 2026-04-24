@@ -2,30 +2,201 @@ import express from 'express';
 
 const router = express.Router();
 
-// Get all tickets
+// Get all tickets with pagination, search, sort
 router.get('/', async (req, res) => {
   try {
-    const { status, priority, categoryId, assigneeId } = req.query;
-    const where = {};
+    const {
+      status, priority, categoryId, assigneeId,
+      page = 1, limit = 20,
+      search, sortBy = 'createdAt', sortOrder = 'desc'
+    } = req.query;
 
+    const where = {};
     if (status) where.status = status;
     if (priority) where.priority = priority;
     if (categoryId) where.categoryId = categoryId;
     if (assigneeId) where.assigneeId = assigneeId;
 
+    // Search across subject, description, customer name
+    if (search) {
+      where.OR = [
+        { subject: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+        { customer: { name: { contains: search, mode: 'insensitive' } } },
+        { customer: { email: { contains: search, mode: 'insensitive' } } },
+      ];
+    }
+
+    const pageNum = Math.max(1, parseInt(page));
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
+    const skip = (pageNum - 1) * limitNum;
+
+    // Validate sortBy
+    const allowedSortFields = ['createdAt', 'updatedAt', 'subject', 'status', 'priority'];
+    const orderField = allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
+    const order = sortOrder === 'asc' ? 'asc' : 'desc';
+
+    const [tickets, total] = await Promise.all([
+      req.prisma.ticket.findMany({
+        where,
+        include: {
+          customer: { select: { id: true, name: true, email: true, avatar: true } },
+          assignee: { select: { id: true, name: true, avatar: true } },
+          category: { select: { id: true, name: true, color: true } },
+          tags: { include: { tag: true } },
+          _count: { select: { messages: true } }
+        },
+        orderBy: { [orderField]: order },
+        skip,
+        take: limitNum,
+      }),
+      req.prisma.ticket.count({ where }),
+    ]);
+
+    res.json({
+      data: tickets,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum),
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// CSV Export
+router.get('/export/csv', async (req, res) => {
+  try {
+    const { status, priority, categoryId } = req.query;
+    const where = {};
+    if (status) where.status = status;
+    if (priority) where.priority = priority;
+    if (categoryId) where.categoryId = categoryId;
+
     const tickets = await req.prisma.ticket.findMany({
       where,
       include: {
-        customer: { select: { id: true, name: true, email: true, avatar: true } },
-        assignee: { select: { id: true, name: true, avatar: true } },
-        category: { select: { id: true, name: true, color: true } },
-        tags: { include: { tag: true } },
-        _count: { select: { messages: true } }
+        customer: { select: { name: true, email: true } },
+        assignee: { select: { name: true } },
+        category: { select: { name: true } },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
 
-    res.json(tickets);
+    const headers = ['ID', 'Subject', 'Description', 'Status', 'Priority', 'Customer', 'Customer Email', 'Assignee', 'Category', 'Source', 'Created At'];
+    const csvRows = [headers.join(',')];
+
+    for (const t of tickets) {
+      csvRows.push([
+        t.id,
+        `"${(t.subject || '').replace(/"/g, '""')}"`,
+        `"${(t.description || '').replace(/"/g, '""').substring(0, 200)}"`,
+        t.status,
+        t.priority,
+        `"${t.customer?.name || ''}"`,
+        t.customer?.email || '',
+        `"${t.assignee?.name || 'Unassigned'}"`,
+        `"${t.category?.name || ''}"`,
+        t.source,
+        new Date(t.createdAt).toISOString(),
+      ].join(','));
+    }
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=tickets-export.csv');
+    res.send(csvRows.join('\n'));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// PDF Export (JSON structure for client-side PDF generation)
+router.get('/export/pdf', async (req, res) => {
+  try {
+    const { status, priority, categoryId } = req.query;
+    const where = {};
+    if (status) where.status = status;
+    if (priority) where.priority = priority;
+    if (categoryId) where.categoryId = categoryId;
+
+    const tickets = await req.prisma.ticket.findMany({
+      where,
+      include: {
+        customer: { select: { name: true, email: true } },
+        assignee: { select: { name: true } },
+        category: { select: { name: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const pdfData = {
+      title: 'Tickets Report',
+      generatedAt: new Date().toISOString(),
+      totalRecords: tickets.length,
+      columns: ['Subject', 'Status', 'Priority', 'Customer', 'Assignee', 'Category', 'Created'],
+      rows: tickets.map(t => ([
+        t.subject,
+        t.status,
+        t.priority,
+        t.customer?.name || '',
+        t.assignee?.name || 'Unassigned',
+        t.category?.name || '',
+        new Date(t.createdAt).toLocaleDateString(),
+      ])),
+    };
+
+    res.json(pdfData);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Bulk delete tickets
+router.post('/bulk/delete', async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: 'Provide an array of ticket IDs' });
+    }
+
+    // Delete related records first
+    await req.prisma.ticketTag.deleteMany({ where: { ticketId: { in: ids } } });
+    await req.prisma.message.deleteMany({ where: { ticketId: { in: ids } } });
+
+    const result = await req.prisma.ticket.deleteMany({
+      where: { id: { in: ids } }
+    });
+
+    res.json({ message: `${result.count} tickets deleted`, count: result.count });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Bulk update tickets
+router.post('/bulk/update', async (req, res) => {
+  try {
+    const { ids, data } = req.body;
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: 'Provide an array of ticket IDs' });
+    }
+
+    const updateData = {};
+    if (data.status) updateData.status = data.status;
+    if (data.priority) updateData.priority = data.priority;
+    if (data.assigneeId !== undefined) updateData.assigneeId = data.assigneeId;
+    if (data.categoryId !== undefined) updateData.categoryId = data.categoryId;
+    if (data.status === 'resolved') updateData.resolvedAt = new Date();
+
+    const result = await req.prisma.ticket.updateMany({
+      where: { id: { in: ids } },
+      data: updateData,
+    });
+
+    res.json({ message: `${result.count} tickets updated`, count: result.count });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -152,7 +323,6 @@ router.post('/:id/messages', async (req, res) => {
       }
     });
 
-    // Update ticket timestamp
     await req.prisma.ticket.update({
       where: { id: req.params.id },
       data: { updatedAt: new Date() }
@@ -168,14 +338,9 @@ router.post('/:id/messages', async (req, res) => {
 router.post('/:id/tags', async (req, res) => {
   try {
     const { tagId } = req.body;
-
     await req.prisma.ticketTag.create({
-      data: {
-        ticketId: req.params.id,
-        tagId
-      }
+      data: { ticketId: req.params.id, tagId }
     });
-
     res.status(201).json({ message: 'Tag added' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -193,7 +358,6 @@ router.delete('/:id/tags/:tagId', async (req, res) => {
         }
       }
     });
-
     res.json({ message: 'Tag removed' });
   } catch (error) {
     res.status(500).json({ error: error.message });

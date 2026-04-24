@@ -19,6 +19,15 @@ async function main() {
   console.log('Clearing existing data...');
   await prisma.ticketTag.deleteMany();
   await prisma.message.deleteMany();
+  await prisma.aiTicketClassification.deleteMany();
+  await prisma.aiResolutionPrediction.deleteMany();
+  await prisma.aiKnowledgeSuggestion.deleteMany();
+  await prisma.aiQualityScore.deleteMany();
+  await prisma.aiEscalationRouting.deleteMany();
+  await prisma.aiShoppingConversation.deleteMany();
+  await prisma.order.deleteMany();
+  await prisma.shoppingCart.deleteMany();
+  await prisma.product.deleteMany();
   await prisma.ticket.deleteMany();
   await prisma.aiConversation.deleteMany();
   await prisma.analytics.deleteMany();
@@ -26,6 +35,10 @@ async function main() {
   await prisma.knowledgeArticle.deleteMany();
   await prisma.tag.deleteMany();
   await prisma.category.deleteMany();
+  await prisma.emailVerification.deleteMany();
+  await prisma.passwordReset.deleteMany();
+  await prisma.blacklistedToken.deleteMany();
+  await prisma.auditLog.deleteMany();
   await prisma.customer.deleteMany();
   await prisma.user.deleteMany();
   await prisma.setting.deleteMany();
@@ -312,10 +325,272 @@ async function main() {
   ]);
   console.log(`Created ${settings.length} settings`);
 
+  // Create Products (20+)
+  console.log('Creating products...');
+  const products = await Promise.all([
+    prisma.product.create({ data: { name: 'Wireless Bluetooth Headphones', description: 'Premium noise-canceling wireless headphones with 40-hour battery life. Perfect for music lovers and remote workers.', price: 199.99, category: 'Electronics', stock: 150, rating: 4.8, reviewCount: 324, tags: ['audio', 'wireless', 'premium'] } }),
+    prisma.product.create({ data: { name: 'Smart Watch Pro', description: 'Advanced fitness tracker with heart rate monitor, GPS, and 7-day battery. Water resistant to 50m.', price: 349.99, category: 'Electronics', stock: 85, rating: 4.6, reviewCount: 512, tags: ['wearable', 'fitness', 'smart'] } }),
+    prisma.product.create({ data: { name: 'Ergonomic Office Chair', description: 'Adjustable lumbar support, breathable mesh back, and 4D armrests. Designed for all-day comfort.', price: 449.99, category: 'Furniture', stock: 42, rating: 4.7, reviewCount: 189, tags: ['office', 'ergonomic', 'comfort'] } }),
+    prisma.product.create({ data: { name: 'Mechanical Keyboard RGB', description: 'Cherry MX switches, per-key RGB lighting, aluminum frame. Built for gamers and programmers.', price: 149.99, category: 'Electronics', stock: 200, rating: 4.9, reviewCount: 756, tags: ['gaming', 'keyboard', 'rgb'] } }),
+    prisma.product.create({ data: { name: '4K Ultra HD Monitor 27"', description: 'IPS panel, 144Hz refresh rate, 1ms response time. Stunning visuals for work and play.', price: 549.99, category: 'Electronics', stock: 65, rating: 4.5, reviewCount: 423, tags: ['monitor', '4k', 'gaming'] } }),
+    prisma.product.create({ data: { name: 'Portable Power Bank 20000mAh', description: 'Fast charging 65W, USB-C PD, dual ports. Charge your laptop and phone simultaneously.', price: 79.99, category: 'Electronics', stock: 300, rating: 4.4, reviewCount: 891, tags: ['portable', 'charger', 'travel'] } }),
+    prisma.product.create({ data: { name: 'Premium Leather Backpack', description: 'Genuine leather, padded laptop compartment, anti-theft pocket. Style meets functionality.', price: 189.99, category: 'Accessories', stock: 75, rating: 4.6, reviewCount: 234, tags: ['leather', 'backpack', 'travel'] } }),
+    prisma.product.create({ data: { name: 'Standing Desk Electric', description: 'Height adjustable 28-48 inches, memory presets, cable management. Transform your workspace.', price: 599.99, category: 'Furniture', stock: 35, rating: 4.8, reviewCount: 167, tags: ['standing', 'desk', 'electric'] } }),
+    prisma.product.create({ data: { name: 'Wireless Mouse Ergonomic', description: 'Vertical design reduces wrist strain, 6 programmable buttons, silent clicks.', price: 49.99, category: 'Electronics', stock: 250, rating: 4.3, reviewCount: 567, tags: ['mouse', 'ergonomic', 'wireless'] } }),
+    prisma.product.create({ data: { name: 'USB-C Hub 10-in-1', description: 'HDMI 4K, SD card reader, 3x USB 3.0, ethernet, PD charging. Universal compatibility.', price: 69.99, category: 'Electronics', stock: 180, rating: 4.5, reviewCount: 412, tags: ['hub', 'usb-c', 'accessories'] } }),
+    prisma.product.create({ data: { name: 'Noise Canceling Earbuds', description: 'True wireless, ANC, transparency mode, 8-hour battery. Premium sound in your pocket.', price: 179.99, category: 'Electronics', stock: 120, rating: 4.7, reviewCount: 678, tags: ['earbuds', 'wireless', 'anc'] } }),
+    prisma.product.create({ data: { name: 'Webcam 4K HDR', description: 'Auto-focus, built-in ring light, privacy cover. Professional video calls made easy.', price: 129.99, category: 'Electronics', stock: 90, rating: 4.4, reviewCount: 345, tags: ['webcam', '4k', 'streaming'] } }),
+    prisma.product.create({ data: { name: 'Laptop Stand Adjustable', description: 'Aluminum construction, 360° rotation, foldable design. Improve posture and airflow.', price: 59.99, category: 'Accessories', stock: 200, rating: 4.6, reviewCount: 234, tags: ['stand', 'laptop', 'adjustable'] } }),
+    prisma.product.create({ data: { name: 'Smart LED Desk Lamp', description: 'Touch control, 5 brightness levels, USB charging port. Eye-friendly lighting.', price: 39.99, category: 'Furniture', stock: 150, rating: 4.5, reviewCount: 189, tags: ['lamp', 'led', 'smart'] } }),
+    prisma.product.create({ data: { name: 'Wireless Charging Pad', description: '15W fast charge, Qi compatible, LED indicator. Sleek design for any desk.', price: 29.99, category: 'Electronics', stock: 400, rating: 4.3, reviewCount: 567, tags: ['charger', 'wireless', 'qi'] } }),
+    prisma.product.create({ data: { name: 'Cable Management Kit', description: 'Includes clips, sleeves, ties, and box. Organize your workspace perfectly.', price: 24.99, category: 'Accessories', stock: 300, rating: 4.2, reviewCount: 456, tags: ['cable', 'organization', 'kit'] } }),
+    prisma.product.create({ data: { name: 'Desk Mat XXL', description: 'Extended mouse pad, water-resistant, non-slip base. 90x40cm premium surface.', price: 34.99, category: 'Accessories', stock: 220, rating: 4.4, reviewCount: 321, tags: ['desk', 'mat', 'gaming'] } }),
+    prisma.product.create({ data: { name: 'Monitor Light Bar', description: 'Asymmetric light design, auto-dimming, touch controls. Reduce eye strain.', price: 89.99, category: 'Electronics', stock: 100, rating: 4.7, reviewCount: 234, tags: ['light', 'monitor', 'eye-care'] } }),
+    prisma.product.create({ data: { name: 'Portable SSD 1TB', description: 'Read speeds up to 1050MB/s, shock-resistant, pocket-sized. Your files everywhere.', price: 119.99, category: 'Electronics', stock: 150, rating: 4.8, reviewCount: 567, tags: ['storage', 'ssd', 'portable'] } }),
+    prisma.product.create({ data: { name: 'Blue Light Glasses', description: 'Anti-fatigue lenses, lightweight frame, UV protection. Protect your eyes from screens.', price: 44.99, category: 'Accessories', stock: 180, rating: 4.1, reviewCount: 890, tags: ['glasses', 'blue-light', 'eye-care'] } }),
+  ]);
+  console.log(`Created ${products.length} products`);
+
+  // Create Orders (15+)
+  console.log('Creating orders...');
+  const orderStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+  const orders = await Promise.all([
+    prisma.order.create({ data: { orderNumber: 'ORD-2024-001', customerEmail: 'john.smith@techcorp.com', customerName: 'John Smith', items: [{ productId: products[0].id, name: products[0].name, quantity: 1, price: products[0].price }], totalAmount: 199.99, status: 'delivered', shippingAddress: '123 Tech Street, San Francisco, CA 94105', trackingNumber: 'TRK123456789' } }),
+    prisma.order.create({ data: { orderNumber: 'ORD-2024-002', customerEmail: 'emma.watson@startup.io', customerName: 'Emma Watson', items: [{ productId: products[1].id, name: products[1].name, quantity: 1, price: products[1].price }, { productId: products[10].id, name: products[10].name, quantity: 1, price: products[10].price }], totalAmount: 529.98, status: 'shipped', shippingAddress: '456 Innovation Ave, New York, NY 10001', trackingNumber: 'TRK987654321' } }),
+    prisma.order.create({ data: { orderNumber: 'ORD-2024-003', customerEmail: 'michael.brown@bigco.com', customerName: 'Michael Brown', items: [{ productId: products[2].id, name: products[2].name, quantity: 2, price: products[2].price }], totalAmount: 899.98, status: 'processing', shippingAddress: '789 Corporate Blvd, Chicago, IL 60601' } }),
+    prisma.order.create({ data: { orderNumber: 'ORD-2024-004', customerEmail: 'sarah.jones@smallbiz.com', customerName: 'Sarah Jones', items: [{ productId: products[3].id, name: products[3].name, quantity: 1, price: products[3].price }], totalAmount: 149.99, status: 'delivered', shippingAddress: '321 Main St, Austin, TX 78701', trackingNumber: 'TRK456789123' } }),
+    prisma.order.create({ data: { orderNumber: 'ORD-2024-005', customerEmail: 'david.wilson@agency.co', customerName: 'David Wilson', items: [{ productId: products[4].id, name: products[4].name, quantity: 1, price: products[4].price }, { productId: products[7].id, name: products[7].name, quantity: 1, price: products[7].price }], totalAmount: 1149.98, status: 'pending', shippingAddress: '555 Creative Way, Los Angeles, CA 90001' } }),
+    prisma.order.create({ data: { orderNumber: 'ORD-2024-006', customerEmail: 'lisa.chen@retailer.com', customerName: 'Lisa Chen', items: [{ productId: products[5].id, name: products[5].name, quantity: 3, price: products[5].price }], totalAmount: 239.97, status: 'shipped', shippingAddress: '888 Retail Row, Seattle, WA 98101', trackingNumber: 'TRK789123456' } }),
+    prisma.order.create({ data: { orderNumber: 'ORD-2024-007', customerEmail: 'robert.taylor@finance.com', customerName: 'Robert Taylor', items: [{ productId: products[6].id, name: products[6].name, quantity: 1, price: products[6].price }], totalAmount: 189.99, status: 'delivered', shippingAddress: '100 Finance Plaza, Boston, MA 02101', trackingNumber: 'TRK321654987' } }),
+    prisma.order.create({ data: { orderNumber: 'ORD-2024-008', customerEmail: 'jennifer.garcia@health.org', customerName: 'Jennifer Garcia', items: [{ productId: products[8].id, name: products[8].name, quantity: 2, price: products[8].price }, { productId: products[9].id, name: products[9].name, quantity: 1, price: products[9].price }], totalAmount: 169.97, status: 'processing', shippingAddress: '200 Health Ave, Denver, CO 80201' } }),
+    prisma.order.create({ data: { orderNumber: 'ORD-2024-009', customerEmail: 'chris.martinez@edu.edu', customerName: 'Chris Martinez', items: [{ productId: products[11].id, name: products[11].name, quantity: 1, price: products[11].price }], totalAmount: 129.99, status: 'cancelled', shippingAddress: '300 Campus Dr, Miami, FL 33101', notes: 'Customer requested cancellation' } }),
+    prisma.order.create({ data: { orderNumber: 'ORD-2024-010', customerEmail: 'amanda.lee@consulting.com', customerName: 'Amanda Lee', items: [{ productId: products[12].id, name: products[12].name, quantity: 1, price: products[12].price }, { productId: products[13].id, name: products[13].name, quantity: 1, price: products[13].price }], totalAmount: 99.98, status: 'delivered', shippingAddress: '400 Consultant Ln, Phoenix, AZ 85001', trackingNumber: 'TRK654987321' } }),
+    prisma.order.create({ data: { orderNumber: 'ORD-2024-011', customerEmail: 'kevin.white@media.com', customerName: 'Kevin White', items: [{ productId: products[14].id, name: products[14].name, quantity: 2, price: products[14].price }], totalAmount: 59.98, status: 'shipped', shippingAddress: '500 Media Circle, Atlanta, GA 30301', trackingNumber: 'TRK147258369' } }),
+    prisma.order.create({ data: { orderNumber: 'ORD-2024-012', customerEmail: 'nicole.harris@legal.com', customerName: 'Nicole Harris', items: [{ productId: products[15].id, name: products[15].name, quantity: 1, price: products[15].price }, { productId: products[16].id, name: products[16].name, quantity: 1, price: products[16].price }], totalAmount: 59.98, status: 'pending', shippingAddress: '600 Legal St, Washington, DC 20001' } }),
+    prisma.order.create({ data: { orderNumber: 'ORD-2024-013', customerEmail: 'brian.clark@logistics.com', customerName: 'Brian Clark', items: [{ productId: products[17].id, name: products[17].name, quantity: 1, price: products[17].price }], totalAmount: 89.99, status: 'delivered', shippingAddress: '700 Logistics Way, Dallas, TX 75201', trackingNumber: 'TRK963852741' } }),
+    prisma.order.create({ data: { orderNumber: 'ORD-2024-014', customerEmail: 'stephanie.lewis@realestate.com', customerName: 'Stephanie Lewis', items: [{ productId: products[18].id, name: products[18].name, quantity: 2, price: products[18].price }], totalAmount: 239.98, status: 'processing', shippingAddress: '800 Property Blvd, San Diego, CA 92101' } }),
+    prisma.order.create({ data: { orderNumber: 'ORD-2024-015', customerEmail: 'jason.walker@manufacturing.com', customerName: 'Jason Walker', items: [{ productId: products[19].id, name: products[19].name, quantity: 5, price: products[19].price }], totalAmount: 224.95, status: 'shipped', shippingAddress: '900 Factory Rd, Detroit, MI 48201', trackingNumber: 'TRK852741963' } }),
+  ]);
+  console.log(`Created ${orders.length} orders`);
+
+  // Create AI Ticket Classifications (15+)
+  console.log('Creating AI ticket classifications...');
+  const classifications = await Promise.all([
+    prisma.aiTicketClassification.create({ data: { subject: 'Payment failed for subscription', description: 'My credit card was charged but subscription shows as expired.', suggestedCategory: 'Billing', suggestedPriority: 'high', suggestedTags: ['urgent', 'billing'], confidence: 0.92, reasoning: 'Payment-related issue affecting service access requires immediate attention.', sentiment: 'negative', urgencyScore: 8 } }),
+    prisma.aiTicketClassification.create({ data: { subject: 'Cannot login after password reset', description: 'I reset my password but the new password is not working.', suggestedCategory: 'Account Issues', suggestedPriority: 'high', suggestedTags: ['account', 'urgent'], confidence: 0.89, reasoning: 'Account access blocked - high priority for user satisfaction.', sentiment: 'negative', urgencyScore: 7 } }),
+    prisma.aiTicketClassification.create({ data: { subject: 'Feature suggestion for dashboard', description: 'It would be nice to have customizable widgets on the dashboard.', suggestedCategory: 'Feature Request', suggestedPriority: 'low', suggestedTags: ['feature', 'enhancement'], confidence: 0.95, reasoning: 'Non-urgent enhancement request with clear feature description.', sentiment: 'positive', urgencyScore: 3 } }),
+    prisma.aiTicketClassification.create({ data: { subject: 'API returning 500 errors', description: 'Our integration started failing with 500 errors since yesterday.', suggestedCategory: 'Technical Support', suggestedPriority: 'urgent', suggestedTags: ['api', 'bug', 'urgent'], confidence: 0.94, reasoning: 'Service disruption affecting integration - requires immediate investigation.', sentiment: 'negative', urgencyScore: 9 } }),
+    prisma.aiTicketClassification.create({ data: { subject: 'Request for bulk pricing', description: 'We are interested in purchasing licenses for 500 users.', suggestedCategory: 'Sales Inquiry', suggestedPriority: 'medium', suggestedTags: ['sales', 'enterprise'], confidence: 0.91, reasoning: 'Potential large enterprise deal - route to sales team.', sentiment: 'positive', urgencyScore: 5 } }),
+    prisma.aiTicketClassification.create({ data: { subject: 'Slow page loading times', description: 'The reports page takes over 2 minutes to load.', suggestedCategory: 'Performance', suggestedPriority: 'medium', suggestedTags: ['performance', 'slow'], confidence: 0.88, reasoning: 'Performance issue affecting user experience but not blocking.', sentiment: 'neutral', urgencyScore: 5 } }),
+    prisma.aiTicketClassification.create({ data: { subject: 'Order never arrived', description: 'It has been 3 weeks and I still have not received my order.', suggestedCategory: 'Shipping', suggestedPriority: 'high', suggestedTags: ['shipping', 'urgent'], confidence: 0.93, reasoning: 'Delayed delivery significantly past expected timeframe.', sentiment: 'negative', urgencyScore: 7 } }),
+    prisma.aiTicketClassification.create({ data: { subject: 'How to export data to CSV', description: 'I need to know how to export my data for our quarterly report.', suggestedCategory: 'Product Questions', suggestedPriority: 'low', suggestedTags: ['documentation', 'how-to'], confidence: 0.90, reasoning: 'Standard how-to question with available documentation.', sentiment: 'neutral', urgencyScore: 3 } }),
+    prisma.aiTicketClassification.create({ data: { subject: 'Refund request for damaged item', description: 'The product arrived broken and I want a full refund.', suggestedCategory: 'Returns & Refunds', suggestedPriority: 'high', suggestedTags: ['refund', 'damaged'], confidence: 0.96, reasoning: 'Product quality issue requiring compensation.', sentiment: 'negative', urgencyScore: 7 } }),
+    prisma.aiTicketClassification.create({ data: { subject: 'Security alert on my account', description: 'I received an alert about login from unknown location.', suggestedCategory: 'Security', suggestedPriority: 'urgent', suggestedTags: ['security', 'urgent'], confidence: 0.97, reasoning: 'Potential account compromise - requires immediate security review.', sentiment: 'negative', urgencyScore: 10 } }),
+    prisma.aiTicketClassification.create({ data: { subject: 'Cannot find training materials', description: 'Where can I find the video tutorials for new users?', suggestedCategory: 'Training', suggestedPriority: 'low', suggestedTags: ['training', 'documentation'], confidence: 0.87, reasoning: 'Resource location request - point to training materials.', sentiment: 'neutral', urgencyScore: 2 } }),
+    prisma.aiTicketClassification.create({ data: { subject: 'Bug in mobile app', description: 'The app crashes when I try to upload photos.', suggestedCategory: 'Bug Report', suggestedPriority: 'medium', suggestedTags: ['bug', 'mobile'], confidence: 0.91, reasoning: 'Reproducible bug affecting mobile functionality.', sentiment: 'negative', urgencyScore: 6 } }),
+    prisma.aiTicketClassification.create({ data: { subject: 'Partnership opportunity', description: 'We would like to discuss a reseller partnership.', suggestedCategory: 'Partnership', suggestedPriority: 'medium', suggestedTags: ['partnership', 'business'], confidence: 0.89, reasoning: 'Business development opportunity - route to partnerships team.', sentiment: 'positive', urgencyScore: 4 } }),
+    prisma.aiTicketClassification.create({ data: { subject: 'Documentation error found', description: 'The API docs show wrong parameter name for the create endpoint.', suggestedCategory: 'Documentation', suggestedPriority: 'low', suggestedTags: ['documentation', 'fix-needed'], confidence: 0.86, reasoning: 'Documentation correction needed - low urgency but affects accuracy.', sentiment: 'neutral', urgencyScore: 3 } }),
+    prisma.aiTicketClassification.create({ data: { subject: 'Integration with Salesforce', description: 'We need help setting up the Salesforce integration.', suggestedCategory: 'Integration Help', suggestedPriority: 'medium', suggestedTags: ['integration', 'salesforce'], confidence: 0.92, reasoning: 'Technical integration assistance for enterprise customer.', sentiment: 'neutral', urgencyScore: 5 } }),
+  ]);
+  console.log(`Created ${classifications.length} AI ticket classifications`);
+
+  // Create AI Resolution Predictions (15+)
+  console.log('Creating AI resolution predictions...');
+  const predictions = await Promise.all([
+    prisma.aiResolutionPrediction.create({ data: { subject: 'Login issues after update', description: 'Since the latest update, users cannot log in.', predictedResolution: 'Clear browser cache and cookies, then attempt login. If issue persists, the development team needs to rollback the authentication module to the previous version.', estimatedTimeHours: 4, suggestedSteps: ['Verify user credentials', 'Clear browser cache', 'Check auth service status', 'Escalate to dev team if needed'], confidence: 0.85, predictedOutcome: 'success' } }),
+    prisma.aiResolutionPrediction.create({ data: { subject: 'Missing invoice', description: 'Customer did not receive their monthly invoice.', predictedResolution: 'Resend invoice from billing system and verify email delivery. Check spam folder instructions provided.', estimatedTimeHours: 1, suggestedSteps: ['Access billing system', 'Locate invoice', 'Resend to customer email', 'Confirm receipt'], confidence: 0.95, predictedOutcome: 'success' } }),
+    prisma.aiResolutionPrediction.create({ data: { subject: 'Slow report generation', description: 'Large reports take forever to generate.', predictedResolution: 'Optimize query parameters, suggest off-peak scheduling, or upgrade to higher tier for more resources.', estimatedTimeHours: 8, suggestedSteps: ['Analyze report parameters', 'Check data volume', 'Suggest optimization', 'Consider infrastructure upgrade'], confidence: 0.78, predictedOutcome: 'partial' } }),
+    prisma.aiResolutionPrediction.create({ data: { subject: 'Double charged', description: 'Credit card was charged twice for the same order.', predictedResolution: 'Verify duplicate charge in payment gateway, process immediate refund for the duplicate transaction.', estimatedTimeHours: 2, suggestedSteps: ['Verify transactions in Stripe', 'Confirm duplicate', 'Process refund', 'Send confirmation email'], confidence: 0.92, predictedOutcome: 'success' } }),
+    prisma.aiResolutionPrediction.create({ data: { subject: 'Data export failed', description: 'Export job failed with timeout error.', predictedResolution: 'Split export into smaller date ranges or run during off-peak hours. May need backend optimization for large datasets.', estimatedTimeHours: 6, suggestedSteps: ['Check export logs', 'Identify data volume', 'Suggest chunked export', 'Monitor next attempt'], confidence: 0.80, predictedOutcome: 'success' } }),
+    prisma.aiResolutionPrediction.create({ data: { subject: 'Account suspended', description: 'My account was suddenly suspended without notice.', predictedResolution: 'Review account activity for policy violations, communicate findings to customer, and restore access if cleared.', estimatedTimeHours: 24, suggestedSteps: ['Review suspension reason', 'Check activity logs', 'Document findings', 'Make restoration decision'], confidence: 0.75, predictedOutcome: 'escalation_needed' } }),
+    prisma.aiResolutionPrediction.create({ data: { subject: 'Integration sync issues', description: 'Data is not syncing properly with our CRM.', predictedResolution: 'Verify API credentials, check webhook endpoints, and test connection. May require re-authentication.', estimatedTimeHours: 3, suggestedSteps: ['Verify API keys', 'Test webhook delivery', 'Check error logs', 'Re-establish connection'], confidence: 0.88, predictedOutcome: 'success' } }),
+    prisma.aiResolutionPrediction.create({ data: { subject: 'Wrong product delivered', description: 'Received item does not match order.', predictedResolution: 'Arrange return pickup, send correct item with expedited shipping, offer discount for inconvenience.', estimatedTimeHours: 48, suggestedSteps: ['Verify order details', 'Arrange return shipping', 'Send correct product', 'Apply customer credit'], confidence: 0.90, predictedOutcome: 'success' } }),
+    prisma.aiResolutionPrediction.create({ data: { subject: 'Cannot update payment method', description: 'System rejects new credit card.', predictedResolution: 'Verify card details, check for bank restrictions, try alternative payment method if needed.', estimatedTimeHours: 1, suggestedSteps: ['Verify card number', 'Check expiry date', 'Contact card issuer if needed', 'Try alternative method'], confidence: 0.87, predictedOutcome: 'success' } }),
+    prisma.aiResolutionPrediction.create({ data: { subject: 'Mobile app crash', description: 'App crashes immediately on launch.', predictedResolution: 'Uninstall and reinstall app, clear app cache, ensure latest OS version. Report to dev team if persists.', estimatedTimeHours: 2, suggestedSteps: ['Get device details', 'Clear app cache', 'Reinstall app', 'Collect crash logs if needed'], confidence: 0.82, predictedOutcome: 'success' } }),
+    prisma.aiResolutionPrediction.create({ data: { subject: 'SSO not working', description: 'SAML authentication failing for all users.', predictedResolution: 'Verify IdP configuration, check certificate validity, validate SAML response format.', estimatedTimeHours: 4, suggestedSteps: ['Check IdP settings', 'Validate certificate', 'Test SAML response', 'Update configuration if needed'], confidence: 0.83, predictedOutcome: 'success' } }),
+    prisma.aiResolutionPrediction.create({ data: { subject: 'Missing features after upgrade', description: 'Features disappeared after plan upgrade.', predictedResolution: 'Verify plan activation completed, check feature flags, manually enable if system error occurred.', estimatedTimeHours: 1, suggestedSteps: ['Verify subscription status', 'Check feature flags', 'Manually activate features', 'Confirm with customer'], confidence: 0.91, predictedOutcome: 'success' } }),
+    prisma.aiResolutionPrediction.create({ data: { subject: 'Email notifications not received', description: 'Customer not getting any email notifications.', predictedResolution: 'Check email preferences, verify email address, check spam folder, review email delivery logs.', estimatedTimeHours: 2, suggestedSteps: ['Verify notification settings', 'Check spam folder', 'Review delivery logs', 'Add to whitelist'], confidence: 0.86, predictedOutcome: 'success' } }),
+    prisma.aiResolutionPrediction.create({ data: { subject: 'Data corruption issue', description: 'Some records appear corrupted or missing.', predictedResolution: 'Assess extent of corruption, attempt data recovery from backups, coordinate with engineering for root cause.', estimatedTimeHours: 72, suggestedSteps: ['Assess damage scope', 'Identify affected records', 'Restore from backup', 'Investigate root cause'], confidence: 0.65, predictedOutcome: 'escalation_needed' } }),
+    prisma.aiResolutionPrediction.create({ data: { subject: 'Cannot delete old data', description: 'System prevents deletion of outdated records.', predictedResolution: 'Check data retention policies, verify user permissions, process deletion through admin tools if allowed.', estimatedTimeHours: 1, suggestedSteps: ['Check retention policy', 'Verify permissions', 'Use admin deletion tool', 'Confirm deletion'], confidence: 0.89, predictedOutcome: 'success' } }),
+  ]);
+  console.log(`Created ${predictions.length} AI resolution predictions`);
+
+  // Create AI Knowledge Suggestions (15+)
+  console.log('Creating AI knowledge suggestions...');
+  const knowledgeSuggestions = await Promise.all([
+    prisma.aiKnowledgeSuggestion.create({ data: { query: 'How do I reset my password?', suggestedArticles: [{ id: articles[1].id, title: 'How to Reset Your Password', relevanceScore: 0.98, reason: 'Direct match for password reset instructions' }], generatedAnswer: 'To reset your password, click the Forgot Password link on the login page and follow the email instructions. The reset link expires in 24 hours.', confidence: 0.96, wasHelpful: true } }),
+    prisma.aiKnowledgeSuggestion.create({ data: { query: 'What is included in the Pro plan?', suggestedArticles: [{ title: 'Pricing and Plans', relevanceScore: 0.92, reason: 'Covers plan features and pricing' }], generatedAnswer: 'The Pro plan includes unlimited users, priority support, advanced analytics, custom integrations, and API access at $99/month.', confidence: 0.94, wasHelpful: true } }),
+    prisma.aiKnowledgeSuggestion.create({ data: { query: 'How to integrate with Zapier?', suggestedArticles: [{ id: articles[3].id, title: 'API Integration Guide', relevanceScore: 0.85, reason: 'Contains integration setup instructions' }], generatedAnswer: 'We support Zapier integration through our webhooks. Go to Settings > Integrations > Zapier to connect your account and create automated workflows.', confidence: 0.89, wasHelpful: true } }),
+    prisma.aiKnowledgeSuggestion.create({ data: { query: 'Shipping to Canada?', suggestedArticles: [{ id: articles[4].id, title: 'Shipping Policy and Delivery Times', relevanceScore: 0.91, reason: 'Covers international shipping information' }], generatedAnswer: 'Yes, we ship to Canada! Standard international shipping takes 7-14 business days. Customs fees may apply and are the responsibility of the recipient.', confidence: 0.88, wasHelpful: true } }),
+    prisma.aiKnowledgeSuggestion.create({ data: { query: 'Can I get a refund?', suggestedArticles: [{ id: articles[5].id, title: 'Return and Refund Policy', relevanceScore: 0.97, reason: 'Complete refund policy details' }], generatedAnswer: 'Yes, we offer refunds within 30 days of purchase. Items must be unused and in original packaging. Contact support to initiate the process.', confidence: 0.95, wasHelpful: true } }),
+    prisma.aiKnowledgeSuggestion.create({ data: { query: 'How to enable two-factor authentication?', suggestedArticles: [{ id: articles[6].id, title: 'Two-Factor Authentication Setup', relevanceScore: 0.99, reason: 'Step-by-step 2FA setup guide' }], generatedAnswer: 'Go to Account Settings > Security > Enable 2FA. Scan the QR code with Google Authenticator or Authy, then save your backup codes.', confidence: 0.97, wasHelpful: true } }),
+    prisma.aiKnowledgeSuggestion.create({ data: { query: 'Why is my connection slow?', suggestedArticles: [{ id: articles[7].id, title: 'Troubleshooting Connection Issues', relevanceScore: 0.86, reason: 'Connection troubleshooting steps' }, { id: articles[13].id, title: 'Performance Optimization Tips', relevanceScore: 0.78, reason: 'Performance improvement suggestions' }], generatedAnswer: 'Try clearing your browser cache, disabling extensions, or using a different browser. Check our status page for any ongoing issues.', confidence: 0.84, wasHelpful: false } }),
+    prisma.aiKnowledgeSuggestion.create({ data: { query: 'How to export my data?', suggestedArticles: [{ id: articles[9].id, title: 'Data Export and Backup', relevanceScore: 0.96, reason: 'Complete export instructions' }], generatedAnswer: 'Go to Settings > Data Management > Export Data. Select the data types and format (CSV, JSON, or XML), then click Generate Export.', confidence: 0.94, wasHelpful: true } }),
+    prisma.aiKnowledgeSuggestion.create({ data: { query: 'Mobile app features', suggestedArticles: [{ id: articles[10].id, title: 'Mobile App Features', relevanceScore: 0.98, reason: 'Complete mobile app overview' }], generatedAnswer: 'Our mobile app includes full dashboard access, push notifications, offline mode, biometric login, and quick actions. Available on iOS and Android.', confidence: 0.96, wasHelpful: true } }),
+    prisma.aiKnowledgeSuggestion.create({ data: { query: 'How to add team members?', suggestedArticles: [{ id: articles[11].id, title: 'Team Collaboration Features', relevanceScore: 0.90, reason: 'Team management instructions' }], generatedAnswer: 'Go to Settings > Team > Invite Members. Enter their email addresses and select their role. They will receive an invitation email to join.', confidence: 0.92, wasHelpful: true } }),
+    prisma.aiKnowledgeSuggestion.create({ data: { query: 'Webhook setup', suggestedArticles: [{ id: articles[12].id, title: 'Custom Integrations with Webhooks', relevanceScore: 0.95, reason: 'Webhook configuration guide' }], generatedAnswer: 'Navigate to Settings > Integrations > Webhooks. Add your endpoint URL, select events to subscribe to, and save. Test with our webhook tester.', confidence: 0.93, wasHelpful: true } }),
+    prisma.aiKnowledgeSuggestion.create({ data: { query: 'GDPR compliance', suggestedArticles: [{ id: articles[14].id, title: 'GDPR Compliance Guide', relevanceScore: 0.97, reason: 'Complete GDPR information' }], generatedAnswer: 'We are fully GDPR compliant. You can request data access, deletion, or portability by emailing privacy@company.com or through account settings.', confidence: 0.95, wasHelpful: true } }),
+    prisma.aiKnowledgeSuggestion.create({ data: { query: 'How to create reports?', suggestedArticles: [{ id: articles[15].id, title: 'Reporting and Analytics', relevanceScore: 0.94, reason: 'Reporting feature guide' }], generatedAnswer: 'Access the Analytics dashboard, click Custom Report Builder, select your metrics and date range, then generate or schedule the report.', confidence: 0.91, wasHelpful: true } }),
+    prisma.aiKnowledgeSuggestion.create({ data: { query: 'What is the API rate limit?', suggestedArticles: [{ id: articles[3].id, title: 'API Integration Guide', relevanceScore: 0.88, reason: 'Contains API limits information' }], generatedAnswer: 'The standard API rate limit is 1000 requests per minute. Enterprise customers can request higher limits by contacting support.', confidence: 0.90, wasHelpful: true } }),
+    prisma.aiKnowledgeSuggestion.create({ data: { query: 'How to upgrade plan?', suggestedArticles: [{ id: articles[8].id, title: 'Upgrading Your Subscription Plan', relevanceScore: 0.97, reason: 'Plan upgrade instructions' }], generatedAnswer: 'Go to Settings > Subscription > Change Plan. Select your new plan and confirm. The upgrade is effective immediately with prorated billing.', confidence: 0.95, wasHelpful: true } }),
+  ]);
+  console.log(`Created ${knowledgeSuggestions.length} AI knowledge suggestions`);
+
+  // Create AI Quality Scores (15+)
+  console.log('Creating AI quality scores...');
+  const qualityScores = await Promise.all([
+    prisma.aiQualityScore.create({ data: { overallScore: 9.2, clarityScore: 9.5, helpfulnessScore: 9.0, professionalismScore: 9.3, completenessScore: 9.0, feedback: 'Excellent response with clear explanations and actionable steps. Maintained professional tone throughout.', improvements: ['Could add follow-up timeline', 'Include relevant documentation links'] } }),
+    prisma.aiQualityScore.create({ data: { overallScore: 7.5, clarityScore: 7.0, helpfulnessScore: 8.0, professionalismScore: 8.5, completenessScore: 6.5, feedback: 'Good response but could be more comprehensive. Missing some key details.', improvements: ['Provide step-by-step instructions', 'Add troubleshooting alternatives', 'Include expected resolution time'] } }),
+    prisma.aiQualityScore.create({ data: { overallScore: 8.8, clarityScore: 9.0, helpfulnessScore: 8.5, professionalismScore: 9.0, completenessScore: 8.8, feedback: 'Very well-structured response with empathetic tone. Customer needs addressed thoroughly.', improvements: ['Could personalize greeting more'] } }),
+    prisma.aiQualityScore.create({ data: { overallScore: 6.2, clarityScore: 5.5, helpfulnessScore: 6.0, professionalismScore: 7.5, completenessScore: 5.8, feedback: 'Response lacks clarity and specific guidance. Technical jargon may confuse customer.', improvements: ['Simplify technical language', 'Break down into clearer steps', 'Add visual references if possible', 'Offer escalation option'] } }),
+    prisma.aiQualityScore.create({ data: { overallScore: 9.5, clarityScore: 9.8, helpfulnessScore: 9.5, professionalismScore: 9.2, completenessScore: 9.5, feedback: 'Outstanding response! Clear, comprehensive, and professionally delivered with empathy.', improvements: [] } }),
+    prisma.aiQualityScore.create({ data: { overallScore: 8.0, clarityScore: 8.2, helpfulnessScore: 7.8, professionalismScore: 8.5, completenessScore: 7.5, feedback: 'Solid response with good information. Could benefit from more proactive suggestions.', improvements: ['Anticipate follow-up questions', 'Offer additional resources'] } }),
+    prisma.aiQualityScore.create({ data: { overallScore: 5.5, clarityScore: 5.0, helpfulnessScore: 5.5, professionalismScore: 6.5, completenessScore: 5.0, feedback: 'Response is vague and does not fully address the customer concern. Needs significant improvement.', improvements: ['Address specific issue mentioned', 'Provide concrete next steps', 'Show empathy for frustration', 'Offer compensation if appropriate'] } }),
+    prisma.aiQualityScore.create({ data: { overallScore: 8.5, clarityScore: 8.8, helpfulnessScore: 8.2, professionalismScore: 8.7, completenessScore: 8.3, feedback: 'Well-crafted response with good balance of information and brevity.', improvements: ['Add confirmation of understanding', 'Include ticket reference'] } }),
+    prisma.aiQualityScore.create({ data: { overallScore: 9.0, clarityScore: 9.2, helpfulnessScore: 9.0, professionalismScore: 8.8, completenessScore: 9.0, feedback: 'Excellent handling of a complex issue. Clear escalation path and timeline provided.', improvements: ['Could acknowledge wait time impact'] } }),
+    prisma.aiQualityScore.create({ data: { overallScore: 7.0, clarityScore: 7.5, helpfulnessScore: 6.5, professionalismScore: 7.8, completenessScore: 6.2, feedback: 'Response is professional but lacks specific troubleshooting guidance.', improvements: ['Include diagnostic questions', 'Provide self-service options', 'Add knowledge base links'] } }),
+    prisma.aiQualityScore.create({ data: { overallScore: 8.7, clarityScore: 8.5, helpfulnessScore: 9.0, professionalismScore: 8.8, completenessScore: 8.5, feedback: 'Very helpful response with clear action items. Customer well-informed about process.', improvements: ['Could add estimated completion time'] } }),
+    prisma.aiQualityScore.create({ data: { overallScore: 4.5, clarityScore: 4.0, helpfulnessScore: 4.5, professionalismScore: 5.5, completenessScore: 4.0, feedback: 'Response does not address the actual issue. Appears to be a template mismatch.', improvements: ['Read ticket carefully', 'Address specific concern', 'Remove irrelevant information', 'Apologize for confusion'] } }),
+    prisma.aiQualityScore.create({ data: { overallScore: 9.3, clarityScore: 9.5, helpfulnessScore: 9.2, professionalismScore: 9.0, completenessScore: 9.5, feedback: 'Comprehensive response covering all aspects of the inquiry. Well-structured and easy to follow.', improvements: [] } }),
+    prisma.aiQualityScore.create({ data: { overallScore: 7.8, clarityScore: 8.0, helpfulnessScore: 7.5, professionalismScore: 8.2, completenessScore: 7.5, feedback: 'Good response with room for improvement in addressing root cause.', improvements: ['Investigate underlying issue', 'Prevent recurrence suggestions'] } }),
+    prisma.aiQualityScore.create({ data: { overallScore: 8.2, clarityScore: 8.0, helpfulnessScore: 8.5, professionalismScore: 8.3, completenessScore: 8.0, feedback: 'Helpful response with appropriate level of detail. Good use of empathy.', improvements: ['Add proactive follow-up offer'] } }),
+  ]);
+  console.log(`Created ${qualityScores.length} AI quality scores`);
+
+  // Create AI Escalation Routings (15+)
+  console.log('Creating AI escalation routings...');
+  const escalationRoutings = await Promise.all([
+    prisma.aiEscalationRouting.create({ data: { subject: 'VIP customer complaint about service outage', description: 'Our enterprise client TechCorp has been down for 4 hours and is threatening to cancel.', shouldEscalate: true, escalationReason: 'High-value enterprise customer with service disruption and churn risk.', suggestedTeam: 'Management', suggestedAgent: 'Sarah Wilson', urgencyLevel: 'critical', customerSentiment: 'angry', riskScore: 0.95, confidence: 0.98 } }),
+    prisma.aiEscalationRouting.create({ data: { subject: 'Simple password reset request', description: 'Customer forgot their password and needs to reset it.', shouldEscalate: false, escalationReason: 'Standard request that can be handled by any agent.', suggestedTeam: 'Technical', urgencyLevel: 'low', customerSentiment: 'neutral', riskScore: 0.1, confidence: 0.95 } }),
+    prisma.aiEscalationRouting.create({ data: { subject: 'Potential security breach reported', description: 'Customer noticed unauthorized transactions on their account.', shouldEscalate: true, escalationReason: 'Security concern requiring immediate investigation by security team.', suggestedTeam: 'Security', urgencyLevel: 'critical', customerSentiment: 'negative', riskScore: 0.92, confidence: 0.97 } }),
+    prisma.aiEscalationRouting.create({ data: { subject: 'Feature request from major client', description: 'Enterprise customer requesting custom integration capability.', shouldEscalate: true, escalationReason: 'Strategic feature request from key account - route to product team.', suggestedTeam: 'Product', suggestedAgent: 'Robert Garcia', urgencyLevel: 'medium', customerSentiment: 'positive', riskScore: 0.4, confidence: 0.88 } }),
+    prisma.aiEscalationRouting.create({ data: { subject: 'Billing dispute for large amount', description: 'Customer claims they were overcharged $5000 on annual subscription.', shouldEscalate: true, escalationReason: 'High-value billing dispute requiring supervisor approval.', suggestedTeam: 'Billing', suggestedAgent: 'Sarah Wilson', urgencyLevel: 'high', customerSentiment: 'negative', riskScore: 0.75, confidence: 0.92 } }),
+    prisma.aiEscalationRouting.create({ data: { subject: 'General product inquiry', description: 'Customer wants to know about product features before purchasing.', shouldEscalate: false, escalationReason: 'Routine sales inquiry - handle with standard response.', suggestedTeam: 'Sales', urgencyLevel: 'low', customerSentiment: 'positive', riskScore: 0.15, confidence: 0.90 } }),
+    prisma.aiEscalationRouting.create({ data: { subject: 'Repeated service failures', description: 'Third time this month customer has reported the same issue not being resolved.', shouldEscalate: true, escalationReason: 'Recurring issue indicates systemic problem - needs engineering review.', suggestedTeam: 'Technical', suggestedAgent: 'Mike Johnson', urgencyLevel: 'high', customerSentiment: 'angry', riskScore: 0.85, confidence: 0.94 } }),
+    prisma.aiEscalationRouting.create({ data: { subject: 'Media inquiry about company', description: 'Journalist from TechNews requesting interview about recent changes.', shouldEscalate: true, escalationReason: 'Media inquiry requires PR/Communications handling.', suggestedTeam: 'Management', urgencyLevel: 'medium', customerSentiment: 'neutral', riskScore: 0.6, confidence: 0.91 } }),
+    prisma.aiEscalationRouting.create({ data: { subject: 'Standard refund request', description: 'Customer wants refund for product purchased 2 weeks ago.', shouldEscalate: false, escalationReason: 'Within standard refund window - process normally.', suggestedTeam: 'Billing', urgencyLevel: 'low', customerSentiment: 'neutral', riskScore: 0.2, confidence: 0.93 } }),
+    prisma.aiEscalationRouting.create({ data: { subject: 'Legal threat from customer', description: 'Customer threatening legal action over alleged GDPR violation.', shouldEscalate: true, escalationReason: 'Legal threat requires immediate legal team involvement.', suggestedTeam: 'Legal', urgencyLevel: 'critical', customerSentiment: 'angry', riskScore: 0.98, confidence: 0.99 } }),
+    prisma.aiEscalationRouting.create({ data: { subject: 'Partnership proposal', description: 'Potential partner company wants to discuss integration partnership.', shouldEscalate: true, escalationReason: 'Business development opportunity - route to partnerships team.', suggestedTeam: 'Business Development', urgencyLevel: 'medium', customerSentiment: 'positive', riskScore: 0.25, confidence: 0.87 } }),
+    prisma.aiEscalationRouting.create({ data: { subject: 'Data loss complaint', description: 'Customer reports all their data disappeared from their account.', shouldEscalate: true, escalationReason: 'Potential data integrity issue - requires immediate engineering investigation.', suggestedTeam: 'Technical', urgencyLevel: 'critical', customerSentiment: 'negative', riskScore: 0.9, confidence: 0.96 } }),
+    prisma.aiEscalationRouting.create({ data: { subject: 'Accessibility complaint', description: 'Visually impaired user reports screen reader compatibility issues.', shouldEscalate: true, escalationReason: 'Accessibility issue may have compliance implications - route to product team.', suggestedTeam: 'Product', urgencyLevel: 'high', customerSentiment: 'negative', riskScore: 0.7, confidence: 0.89 } }),
+    prisma.aiEscalationRouting.create({ data: { subject: 'Simple how-to question', description: 'Customer asking how to change notification settings.', shouldEscalate: false, escalationReason: 'Basic question with documented answer.', suggestedTeam: 'Technical', urgencyLevel: 'low', customerSentiment: 'neutral', riskScore: 0.05, confidence: 0.96 } }),
+    prisma.aiEscalationRouting.create({ data: { subject: 'Competitor comparison request', description: 'Potential customer asking for detailed comparison with competitor.', shouldEscalate: true, escalationReason: 'Sales opportunity requiring specialized competitive analysis.', suggestedTeam: 'Sales', urgencyLevel: 'medium', customerSentiment: 'positive', riskScore: 0.35, confidence: 0.85 } }),
+  ]);
+  console.log(`Created ${escalationRoutings.length} AI escalation routings`);
+
+  // Create AI Shopping Conversations (15+)
+  console.log('Creating AI shopping conversations...');
+  const shoppingConversations = await Promise.all([
+    prisma.aiShoppingConversation.create({ data: { sessionId: 'shop-001', customerMessage: 'I am looking for wireless headphones', assistantResponse: 'Great choice! I recommend our Wireless Bluetooth Headphones at $199.99. They feature premium noise-canceling technology and 40-hour battery life, perfect for music lovers and remote workers. Would you like me to add them to your cart?', intent: 'search', productRecommendations: [{ name: 'Wireless Bluetooth Headphones', reason: 'Best-selling premium audio product' }], confidence: 0.94 } }),
+    prisma.aiShoppingConversation.create({ data: { sessionId: 'shop-002', customerMessage: 'What is the status of my order ORD-2024-001?', assistantResponse: 'Your order ORD-2024-001 has been delivered! It was delivered to 123 Tech Street, San Francisco, CA 94105 with tracking number TRK123456789. Is there anything else I can help you with?', intent: 'order_status', orderInfo: { orderNumber: 'ORD-2024-001', status: 'delivered' }, confidence: 0.97 } }),
+    prisma.aiShoppingConversation.create({ data: { sessionId: 'shop-003', customerMessage: 'Add the mechanical keyboard to my cart', assistantResponse: 'Done! I have added the Mechanical Keyboard RGB ($149.99) to your cart. Your current cart total is $149.99. Would you like to continue shopping or proceed to checkout?', intent: 'add_to_cart', cartActions: { action: 'add', product: 'Mechanical Keyboard RGB', quantity: 1 }, confidence: 0.95 } }),
+    prisma.aiShoppingConversation.create({ data: { sessionId: 'shop-004', customerMessage: 'I need a good monitor for gaming', assistantResponse: 'For gaming, I highly recommend our 4K Ultra HD Monitor 27" at $549.99. It features a 144Hz refresh rate and 1ms response time - perfect for competitive gaming with stunning 4K visuals. It is currently rated 4.5 stars by 423 customers!', intent: 'search', productRecommendations: [{ name: '4K Ultra HD Monitor 27"', reason: 'High refresh rate ideal for gaming' }], confidence: 0.92 } }),
+    prisma.aiShoppingConversation.create({ data: { sessionId: 'shop-005', customerMessage: 'Can I return my order if I do not like it?', assistantResponse: 'Absolutely! We offer hassle-free returns within 30 days of purchase. Items must be unused and in original packaging. Simply contact our support team to initiate a return, and we will arrange a pickup at no extra cost to you.', intent: 'return', confidence: 0.96 } }),
+    prisma.aiShoppingConversation.create({ data: { sessionId: 'shop-006', customerMessage: 'Show me products under $50', assistantResponse: 'Here are our great products under $50: Smart LED Desk Lamp ($39.99), Wireless Mouse Ergonomic ($49.99), Wireless Charging Pad ($29.99), Cable Management Kit ($24.99), Desk Mat XXL ($34.99), and Blue Light Glasses ($44.99). Which one interests you?', intent: 'browse', productRecommendations: [{ name: 'Wireless Charging Pad', reason: 'Best value under $50' }, { name: 'Smart LED Desk Lamp', reason: 'Popular accessory' }], confidence: 0.91 } }),
+    prisma.aiShoppingConversation.create({ data: { sessionId: 'shop-007', customerMessage: 'Do you have standing desks?', assistantResponse: 'Yes! Our Standing Desk Electric is available at $599.99. It features height adjustment from 28-48 inches, memory presets for your preferred heights, and built-in cable management. It is rated 4.8 stars and transforms any workspace!', intent: 'search', productRecommendations: [{ name: 'Standing Desk Electric', reason: 'Only standing desk in inventory' }], confidence: 0.95 } }),
+    prisma.aiShoppingConversation.create({ data: { sessionId: 'shop-008', customerMessage: 'How long does shipping take?', assistantResponse: 'We offer multiple shipping options: Standard (5-7 business days) which is free on orders over $50, Express (2-3 business days) for $9.99, and Overnight (1 business day) for $19.99. International shipping is also available to select countries.', intent: 'general', confidence: 0.93 } }),
+    prisma.aiShoppingConversation.create({ data: { sessionId: 'shop-009', customerMessage: 'I want to checkout', assistantResponse: 'Perfect! Let me help you complete your purchase. Your cart contains the items you selected with a total ready for checkout. Please provide your shipping address and payment details to finalize your order. Would you like to proceed?', intent: 'checkout', confidence: 0.94 } }),
+    prisma.aiShoppingConversation.create({ data: { sessionId: 'shop-010', customerMessage: 'What are your best-selling products?', assistantResponse: 'Our best sellers include: Mechanical Keyboard RGB (756 reviews, 4.9 stars), Noise Canceling Earbuds (678 reviews), Blue Light Glasses (890 reviews for eye protection), and Portable SSD 1TB (567 reviews). These are customer favorites!', intent: 'browse', productRecommendations: [{ name: 'Mechanical Keyboard RGB', reason: 'Highest rated product' }, { name: 'Noise Canceling Earbuds', reason: 'Most reviewed audio product' }], confidence: 0.90 } }),
+    prisma.aiShoppingConversation.create({ data: { sessionId: 'shop-011', customerMessage: 'Remove the headphones from my cart', assistantResponse: 'Done! I have removed the Wireless Bluetooth Headphones from your cart. Is there anything else you would like to add or shall we proceed with the remaining items?', intent: 'add_to_cart', cartActions: { action: 'remove', product: 'Wireless Bluetooth Headphones', quantity: 1 }, confidence: 0.96 } }),
+    prisma.aiShoppingConversation.create({ data: { sessionId: 'shop-012', customerMessage: 'I need something to reduce eye strain', assistantResponse: 'For reducing eye strain, I recommend two great options: Blue Light Glasses ($44.99) - protective lenses with UV protection, and our Monitor Light Bar ($89.99) - features asymmetric light design and auto-dimming to reduce eye fatigue. Both are highly rated!', intent: 'search', productRecommendations: [{ name: 'Blue Light Glasses', reason: 'Specifically designed for screen users' }, { name: 'Monitor Light Bar', reason: 'Reduces eye strain from monitor use' }], confidence: 0.93 } }),
+    prisma.aiShoppingConversation.create({ data: { sessionId: 'shop-013', customerMessage: 'Is the smart watch waterproof?', assistantResponse: 'Yes! The Smart Watch Pro is water resistant to 50 meters (5 ATM), making it suitable for swimming and water activities. It also features a 7-day battery life, heart rate monitor, and GPS tracking. Perfect for fitness enthusiasts!', intent: 'general', productRecommendations: [{ name: 'Smart Watch Pro', reason: 'Product inquiry' }], confidence: 0.97 } }),
+    prisma.aiShoppingConversation.create({ data: { sessionId: 'shop-014', customerMessage: 'I want to set up a home office', assistantResponse: 'Great! For a complete home office setup, I recommend: Ergonomic Office Chair ($449.99), Standing Desk Electric ($599.99), 4K Monitor ($549.99), and Mechanical Keyboard ($149.99). Total would be $1,748.96. Shall I add these as a bundle to your cart?', intent: 'browse', productRecommendations: [{ name: 'Ergonomic Office Chair', reason: 'Essential for comfort' }, { name: 'Standing Desk Electric', reason: 'Promotes healthy posture' }, { name: '4K Ultra HD Monitor 27"', reason: 'Premium display' }], confidence: 0.89 } }),
+    prisma.aiShoppingConversation.create({ data: { sessionId: 'shop-015', customerMessage: 'Thanks for your help!', assistantResponse: 'You are welcome! It was my pleasure to assist you today. If you have any more questions about our products or need help with your order, feel free to ask anytime. Happy shopping!', intent: 'general', confidence: 0.98 } }),
+  ]);
+  console.log(`Created ${shoppingConversations.length} AI shopping conversations`);
+
+  // Create Password Reset Tokens (15+)
+  console.log('Creating password reset tokens...');
+  const passwordResets = [];
+  const resetEmails = [
+    'admin@company.com', 'sarah.wilson@company.com', 'mike.johnson@company.com',
+    'emily.chen@company.com', 'david.brown@company.com', 'lisa.anderson@company.com',
+    'james.taylor@company.com', 'jennifer.martinez@company.com', 'robert.garcia@company.com',
+    'amanda.lee@company.com', 'chris.davis@company.com', 'nicole.white@company.com',
+    'kevin.harris@company.com', 'stephanie.clark@company.com', 'brian.lewis@company.com',
+  ];
+  for (let i = 0; i < resetEmails.length; i++) {
+    const daysAgo = i * 2;
+    const token = `reset-token-${String(i + 1).padStart(3, '0')}-${Date.now()}`;
+    passwordResets.push(
+      prisma.passwordReset.create({
+        data: {
+          email: resetEmails[i],
+          token,
+          used: i < 8,
+          expiresAt: new Date(Date.now() + (i < 5 ? -24 : 24) * 60 * 60 * 1000),
+          createdAt: new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000),
+        }
+      })
+    );
+  }
+  await Promise.all(passwordResets);
+  console.log(`Created ${passwordResets.length} password reset tokens`);
+
+  // Create Email Verifications (15+)
+  console.log('Creating email verifications...');
+  const emailVerifications = [];
+  for (let i = 0; i < users.length; i++) {
+    const token = `verify-token-${String(i + 1).padStart(3, '0')}-${Date.now()}`;
+    emailVerifications.push(
+      prisma.emailVerification.create({
+        data: {
+          userId: users[i].id,
+          email: users[i].email,
+          token,
+          verified: i < 12,
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          createdAt: new Date(Date.now() - i * 24 * 60 * 60 * 1000),
+        }
+      })
+    );
+  }
+  await Promise.all(emailVerifications);
+  console.log(`Created ${emailVerifications.length} email verifications`);
+
+  // Create Audit Logs (15+)
+  console.log('Creating audit logs...');
+  const auditActions = [
+    { action: 'LOGIN', entity: 'User', details: 'User logged in successfully' },
+    { action: 'LOGOUT', entity: 'User', details: 'User logged out' },
+    { action: 'CREATE', entity: 'Ticket', details: 'Created ticket: Cannot access my account' },
+    { action: 'UPDATE', entity: 'Ticket', details: 'Updated ticket status to resolved' },
+    { action: 'DELETE', entity: 'Ticket', details: 'Deleted ticket #42' },
+    { action: 'CREATE', entity: 'Customer', details: 'Created new customer: John Smith' },
+    { action: 'UPDATE', entity: 'Customer', details: 'Updated customer tier to enterprise' },
+    { action: 'PASSWORD_RESET', entity: 'User', details: 'Password reset requested' },
+    { action: 'PASSWORD_CHANGE', entity: 'User', details: 'Password changed successfully' },
+    { action: 'EMAIL_VERIFY', entity: 'User', details: 'Email verified' },
+    { action: 'BULK_DELETE', entity: 'Ticket', details: 'Bulk deleted 5 tickets' },
+    { action: 'BULK_UPDATE', entity: 'Ticket', details: 'Bulk updated 10 tickets to closed' },
+    { action: 'EXPORT', entity: 'Ticket', details: 'Exported tickets to CSV' },
+    { action: 'CREATE', entity: 'KnowledgeArticle', details: 'Created article: Getting Started Guide' },
+    { action: 'UPDATE', entity: 'Setting', details: 'Updated company name setting' },
+    { action: 'LOGIN_FAILED', entity: 'User', details: 'Failed login attempt for admin@company.com' },
+  ];
+  const auditLogs = [];
+  for (let i = 0; i < auditActions.length; i++) {
+    auditLogs.push(
+      prisma.auditLog.create({
+        data: {
+          userId: users[i % users.length].id,
+          action: auditActions[i].action,
+          entity: auditActions[i].entity,
+          entityId: tickets[i % tickets.length]?.id,
+          details: auditActions[i].details,
+          ipAddress: `192.168.1.${100 + i}`,
+          createdAt: new Date(Date.now() - i * 3 * 60 * 60 * 1000),
+        }
+      })
+    );
+  }
+  await Promise.all(auditLogs);
+  console.log(`Created ${auditLogs.length} audit logs`);
+
   console.log('');
-  console.log('✅ Database seeding completed successfully!');
+  console.log('Database seeding completed successfully!');
   console.log('');
-  console.log('📊 Summary:');
+  console.log('Summary:');
   console.log(`   - Users: ${users.length}`);
   console.log(`   - Categories: ${categories.length}`);
   console.log(`   - Tags: ${tags.length}`);
@@ -326,8 +601,19 @@ async function main() {
   console.log(`   - AI Conversations: ${aiConversations.length}`);
   console.log(`   - Analytics Records: ${analyticsRecords.length}`);
   console.log(`   - Settings: ${settings.length}`);
+  console.log(`   - Products: ${products.length}`);
+  console.log(`   - Orders: ${orders.length}`);
+  console.log(`   - AI Ticket Classifications: ${classifications.length}`);
+  console.log(`   - AI Resolution Predictions: ${predictions.length}`);
+  console.log(`   - AI Knowledge Suggestions: ${knowledgeSuggestions.length}`);
+  console.log(`   - AI Quality Scores: ${qualityScores.length}`);
+  console.log(`   - AI Escalation Routings: ${escalationRoutings.length}`);
+  console.log(`   - AI Shopping Conversations: ${shoppingConversations.length}`);
+  console.log(`   - Password Resets: ${passwordResets.length}`);
+  console.log(`   - Email Verifications: ${emailVerifications.length}`);
+  console.log(`   - Audit Logs: ${auditLogs.length}`);
   console.log('');
-  console.log('🔑 Login credentials:');
+  console.log('Login credentials:');
   console.log('   Email: admin@company.com');
   console.log('   Password: password123');
 }
