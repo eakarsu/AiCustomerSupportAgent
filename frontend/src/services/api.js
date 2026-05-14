@@ -194,6 +194,28 @@ export const aiApi = {
   getHistory: (sessionId) => fetchApi(`/ai/history/${sessionId}`),
 };
 
+// New AI features (added per audit)
+export const aiAdvancedApi = {
+  ticketPriorityPredictor: (ticket_id) => fetchApi('/ai/ticket-priority-predictor', { method: 'POST', body: JSON.stringify({ ticket_id }) }),
+  churnRisk: (customer_id) => fetchApi('/ai/churn-risk', { method: 'POST', body: JSON.stringify({ customer_id }) }),
+  agentCoaching: (conversation_id) => fetchApi('/ai/agent-coaching', { method: 'POST', body: JSON.stringify({ conversation_id }) }),
+  smartCannedSuggester: (ticket_id) => fetchApi('/ai/smart-canned-suggester', { method: 'POST', body: JSON.stringify({ ticket_id }) }),
+  clvScoring: (customer_id) => fetchApi('/ai/clv-scoring', { method: 'POST', body: JSON.stringify({ customer_id }) }),
+  faqBuilder: (data) => fetchApi('/ai/faq-builder', { method: 'POST', body: JSON.stringify(data) }),
+  translate: (data) => fetchApi('/ai/translate', { method: 'POST', body: JSON.stringify(data) }),
+  closurePredictor: (ticket_id) => fetchApi('/ai/closure-predictor', { method: 'POST', body: JSON.stringify({ ticket_id }) }),
+  callTranscriptAnalyzer: (call_id) => fetchApi('/ai/call-transcript-analyzer', { method: 'POST', body: JSON.stringify({ call_id }) }),
+  slaSmartScheduling: (data) => fetchApi('/ai/sla-smart-scheduling', { method: 'POST', body: JSON.stringify(data) }),
+  autoTagTicket: (data) => fetchApi('/ai/auto-tag-ticket', { method: 'POST', body: JSON.stringify(data) }),
+  extractCallTranscriptActionItems: (data) => fetchApi('/ai/extract-call-transcript-action-items', { method: 'POST', body: JSON.stringify(data) }),
+  // Existing already-in-aiFeatures
+  classifyTicket: (data) => fetchApi('/ai-features/classify-ticket', { method: 'POST', body: JSON.stringify(data) }),
+  predictResolution: (data) => fetchApi('/ai-features/predict-resolution', { method: 'POST', body: JSON.stringify(data) }),
+  suggestKnowledge: (data) => fetchApi('/ai-features/suggest-knowledge', { method: 'POST', body: JSON.stringify(data) }),
+  scoreQuality: (data) => fetchApi('/ai-features/score-quality', { method: 'POST', body: JSON.stringify(data) }),
+  routeEscalation: (data) => fetchApi('/ai-features/route-escalation', { method: 'POST', body: JSON.stringify(data) }),
+};
+
 // Calls
 export const callsApi = {
   getAll: (params = {}) => {

@@ -49,6 +49,7 @@ const aiFeatures = [
   { path: '/ai-quality', icon: Star, label: 'Quality Scorer', color: 'text-yellow-500' },
   { path: '/ai-escalation', icon: Route, label: 'Escalation Router', color: 'text-red-600' },
   { path: '/ai-shopping', icon: ShoppingCart, label: 'Shopping Assistant', color: 'text-pink-600' },
+  { path: '/ai-advanced', icon: Sparkles, label: 'AI Advanced', color: 'text-purple-600' },
 ];
 
 function Layout() {

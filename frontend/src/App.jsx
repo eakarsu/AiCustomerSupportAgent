@@ -31,6 +31,21 @@ import AiKnowledgeSuggester from './pages/AiKnowledgeSuggester';
 import AiQualityScorer from './pages/AiQualityScorer';
 import AiEscalationRouter from './pages/AiEscalationRouter';
 import AiShoppingAssistant from './pages/AiShoppingAssistant';
+import AiAdvancedFeatures from './pages/AiAdvancedFeatures';
+
+// // === Batch 02 Gaps & Frontend Mounts ===
+import CfPredictiveCustomerChurn from './pages/CfPredictiveCustomerChurn';
+import CfCustomerHealthScoring from './pages/CfCustomerHealthScoring';
+import CfAgentPerformancePrediction from './pages/CfAgentPerformancePrediction';
+import CfProactiveSupportTriggers from './pages/CfProactiveSupportTriggers';
+import CfMultiLingualSupportAutomation from './pages/CfMultiLingualSupportAutomation';
+import GapCallsVoiceLackAnalyzeCallSentimentOrExtractCallTran from './pages/GapCallsVoiceLackAnalyzeCallSentimentOrExtractCallTran';
+import GapCannedresponsesLacksAutoGenerateCannedResponse from './pages/GapCannedresponsesLacksAutoGenerateCannedResponse';
+import GapCategoriesTagsLackMlBasedAutoTagging from './pages/GapCategoriesTagsLackMlBasedAutoTagging';
+import GapNoLiveChatWidgetForWebsiteEmbedding from './pages/GapNoLiveChatWidgetForWebsiteEmbedding';
+import GapLimitedCrmIntegrationNoSalesforceHubspotAdapter from './pages/GapLimitedCrmIntegrationNoSalesforceHubspotAdapter';
+import GapLimitedWorkflowAutomationAutoEscalationAutoCloseAuto from './pages/GapLimitedWorkflowAutomationAutoEscalationAutoCloseAuto';
+import GapNoPaymentBillingModuleExposedStripeOnlyStubbed from './pages/GapNoPaymentBillingModuleExposedStripeOnlyStubbed';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -99,8 +114,23 @@ function AppRoutes() {
         <Route path="ai-quality" element={<AiQualityScorer />} />
         <Route path="ai-escalation" element={<AiEscalationRouter />} />
         <Route path="ai-shopping" element={<AiShoppingAssistant />} />
+        <Route path="ai-advanced" element={<AiAdvancedFeatures />} />
       </Route>
-    </Routes>
+    
+        {/* // === Batch 02 Gaps & Frontend Mounts === */}
+        <Route path="/cf/predictive-customer-churn" element={<CfPredictiveCustomerChurn />} />
+        <Route path="/cf/customer-health-scoring" element={<CfCustomerHealthScoring />} />
+        <Route path="/cf/agent-performance-prediction" element={<CfAgentPerformancePrediction />} />
+        <Route path="/cf/proactive-support-triggers" element={<CfProactiveSupportTriggers />} />
+        <Route path="/cf/multi-lingual-support-automation" element={<CfMultiLingualSupportAutomation />} />
+        <Route path="/gap/calls-voice-lack-analyze-call-sentiment-or-extract-call-tran" element={<GapCallsVoiceLackAnalyzeCallSentimentOrExtractCallTran />} />
+        <Route path="/gap/cannedresponses-lacks-auto-generate-canned-response" element={<GapCannedresponsesLacksAutoGenerateCannedResponse />} />
+        <Route path="/gap/categories-tags-lack-ml-based-auto-tagging" element={<GapCategoriesTagsLackMlBasedAutoTagging />} />
+        <Route path="/gap/no-live-chat-widget-for-website-embedding" element={<GapNoLiveChatWidgetForWebsiteEmbedding />} />
+        <Route path="/gap/limited-crm-integration-no-salesforce-hubspot-adapter" element={<GapLimitedCrmIntegrationNoSalesforceHubspotAdapter />} />
+        <Route path="/gap/limited-workflow-automation-auto-escalation-auto-close-auto" element={<GapLimitedWorkflowAutomationAutoEscalationAutoCloseAuto />} />
+        <Route path="/gap/no-payment-billing-module-exposed-stripe-only-stubbed" element={<GapNoPaymentBillingModuleExposedStripeOnlyStubbed />} />
+      </Routes>
   );
 }
 

@@ -15,7 +15,7 @@ const getOpenRouterClient = () => {
   });
 };
 
-const getModel = () => process.env.OPENROUTER_MODEL || process.env.AI_MODEL || 'anthropic/claude-3-haiku';
+const getModel = () => process.env.OPENROUTER_MODEL || process.env.AI_MODEL || 'anthropic/claude-3-5-sonnet-20241022';
 
 // ==================== AI TICKET CLASSIFIER ====================
 

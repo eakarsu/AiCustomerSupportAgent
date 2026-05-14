@@ -1,4 +1,17 @@
 import express from 'express';
+import OpenAI from 'openai';
+import { body, validationResult } from 'express-validator';
+
+const MODEL = 'anthropic/claude-3-5-sonnet-20241022';
+
+const getOpenRouterClient = () => new OpenAI({
+  baseURL: 'https://openrouter.ai/api/v1',
+  apiKey: process.env.OPENROUTER_API_KEY,
+  defaultHeaders: {
+    'HTTP-Referer': process.env.APP_URL || 'http://localhost:3000',
+    'X-Title': 'AI Customer Support Agent'
+  }
+});
 
 const router = express.Router();
 
@@ -113,6 +126,66 @@ router.post('/:id/use', async (req, res) => {
 
     res.json(response);
   } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ─── POST /api/canned-responses/ai-improve ───────────────────────────────────
+router.post('/ai-improve', [
+  body('response_text').notEmpty().isString().isLength({ min: 10, max: 5000 }).withMessage('response_text is required (10-5000 chars)'),
+  body('context').optional().isString().isLength({ max: 1000 }),
+  body('tone').optional().isIn(['professional', 'casual', 'empathetic', 'formal', 'friendly']),
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return res.status(400).json({ error: 'Validation failed', details: errors.array().map(e => ({ field: e.path, message: e.msg })) });
+
+  try {
+    const { response_text, context, tone = 'professional' } = req.body;
+    const openrouter = getOpenRouterClient();
+
+    const completion = await openrouter.chat.completions.create({
+      model: MODEL,
+      messages: [
+        {
+          role: 'system',
+          content: `You are an expert customer support communication specialist. Improve canned responses to be more effective, empathetic, and personalized. Respond ONLY with valid JSON:
+{
+  "improvedText": "<the improved response>",
+  "changes": ["<change made1>", "<change made2>"],
+  "personalizationVariables": ["{{customer_name}}", "{{ticket_id}}"],
+  "toneScore": <0-100>,
+  "clarityScore": <0-100>,
+  "empathyScore": <0-100>,
+  "improvements": "<brief explanation of what was improved>"
+}`
+        },
+        {
+          role: 'user',
+          content: `Original response:
+${response_text}
+
+${context ? `Context: ${context}` : ''}
+Target tone: ${tone}
+
+Improve this canned response to be more effective. Add personalization variables like {{customer_name}}, {{ticket_number}}, {{product_name}} where appropriate.`
+        }
+      ],
+      max_tokens: 600,
+      temperature: 0.5,
+    });
+
+    let result;
+    try {
+      const raw = completion.choices[0].message.content.trim();
+      const match = raw.match(/\{[\s\S]*\}/);
+      result = JSON.parse(match ? match[0] : raw);
+    } catch {
+      result = { improvedText: completion.choices[0].message.content, changes: [], personalizationVariables: [], improvements: 'Unable to parse structured response' };
+    }
+
+    res.json({ original: response_text, ...result });
+  } catch (error) {
+    console.error('Canned response AI improve error:', error);
     res.status(500).json({ error: error.message });
   }
 });
