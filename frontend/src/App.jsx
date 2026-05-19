@@ -46,6 +46,7 @@ import GapNoLiveChatWidgetForWebsiteEmbedding from './pages/GapNoLiveChatWidgetF
 import GapLimitedCrmIntegrationNoSalesforceHubspotAdapter from './pages/GapLimitedCrmIntegrationNoSalesforceHubspotAdapter';
 import GapLimitedWorkflowAutomationAutoEscalationAutoCloseAuto from './pages/GapLimitedWorkflowAutomationAutoEscalationAutoCloseAuto';
 import GapNoPaymentBillingModuleExposedStripeOnlyStubbed from './pages/GapNoPaymentBillingModuleExposedStripeOnlyStubbed';
+import CustomViewsPage from './pages/CustomViewsPage';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -115,6 +116,7 @@ function AppRoutes() {
         <Route path="ai-escalation" element={<AiEscalationRouter />} />
         <Route path="ai-shopping" element={<AiShoppingAssistant />} />
         <Route path="ai-advanced" element={<AiAdvancedFeatures />} />
+        <Route path="custom-views" element={<CustomViewsPage />} />
       </Route>
     
         {/* // === Batch 02 Gaps & Frontend Mounts === */}

@@ -22,7 +22,8 @@ import {
   Sparkles,
   Menu,
   X,
-  Key
+  Key,
+  LayoutGrid
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -39,6 +40,7 @@ const navItems = [
   { path: '/team', icon: UserCircle, label: 'Team' },
   { path: '/ai-chat', icon: Bot, label: 'AI Chat' },
   { path: '/analytics', icon: BarChart3, label: 'Analytics' },
+  { path: '/custom-views', icon: LayoutGrid, label: 'Support Views' },
   { path: '/settings', icon: Settings, label: 'Settings' },
 ];
 
