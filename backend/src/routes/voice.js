@@ -203,7 +203,7 @@ ${knowledgeContext}`;
     ];
 
     const completion = await openrouter.chat.completions.create({
-      model: process.env.AI_MODEL || 'anthropic/claude-3-haiku',
+      model: process.env.AI_MODEL || 'anthropic/claude-3-5-sonnet-20241022',
       messages,
       max_tokens: 200,
       temperature: 0.7
@@ -385,7 +385,7 @@ async function summarizeCall(callId, prisma, openrouter) {
       .join('\n');
 
     const completion = await openrouter.chat.completions.create({
-      model: process.env.AI_MODEL || 'anthropic/claude-3-haiku',
+      model: process.env.AI_MODEL || 'anthropic/claude-3-5-sonnet-20241022',
       messages: [
         {
           role: 'system',
@@ -401,7 +401,7 @@ async function summarizeCall(callId, prisma, openrouter) {
 
     // Detect sentiment
     const sentimentCompletion = await openrouter.chat.completions.create({
-      model: process.env.AI_MODEL || 'anthropic/claude-3-haiku',
+      model: process.env.AI_MODEL || 'anthropic/claude-3-5-sonnet-20241022',
       messages: [
         {
           role: 'system',
@@ -423,5 +423,162 @@ async function summarizeCall(callId, prisma, openrouter) {
     console.error('Summarize call error:', error);
   }
 }
+
+// ─── POST /api/voice/log ──────────────────────────────────────────────────────
+router.post('/log', async (req, res) => {
+  try {
+    const { transcript, duration, sentiment, outcome, customerId, agentId, phone } = req.body;
+
+    if (!transcript) return res.status(400).json({ error: 'transcript is required' });
+
+    const call = await req.prisma.call.create({
+      data: {
+        twilioCallSid: `manual-${Date.now()}`,
+        callerPhone: phone || 'unknown',
+        calledPhone: 'support',
+        direction: 'inbound',
+        status: 'completed',
+        duration: duration ? parseInt(duration) : 0,
+        sentiment: sentiment || null,
+        endedAt: new Date(),
+        customerId: customerId || null,
+      }
+    });
+
+    // Save transcript as a single record
+    if (transcript) {
+      await req.prisma.callTranscript.create({
+        data: {
+          callId: call.id,
+          speaker: 'customer',
+          content: transcript,
+          confidence: 1.0,
+        }
+      });
+    }
+
+    // Update with outcome if provided
+    if (outcome) {
+      await req.prisma.call.update({
+        where: { id: call.id },
+        data: { summary: outcome }
+      });
+    }
+
+    res.status(201).json({ callId: call.id, call });
+  } catch (error) {
+    console.error('Voice log error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ─── GET /api/voice/calls ─────────────────────────────────────────────────────
+router.get('/calls', async (req, res) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));
+    const skip = (page - 1) * limit;
+
+    const where = {};
+    if (req.query.customerId) where.customerId = req.query.customerId;
+    if (req.query.status) where.status = req.query.status;
+    if (req.query.direction) where.direction = req.query.direction;
+
+    const [calls, total] = await Promise.all([
+      req.prisma.call.findMany({
+        where,
+        include: {
+          customer: { select: { id: true, name: true, email: true } },
+          transcripts: { orderBy: { timestamp: 'asc' }, take: 5 }
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      req.prisma.call.count({ where }),
+    ]);
+
+    res.json({
+      data: calls,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) }
+    });
+  } catch (error) {
+    console.error('Voice calls list error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ─── POST /api/voice/ai-summary ───────────────────────────────────────────────
+router.post('/ai-summary', async (req, res) => {
+  try {
+    const { call_transcript, call_id } = req.body;
+
+    if (!call_transcript && !call_id) {
+      return res.status(400).json({ error: 'Either call_transcript or call_id is required' });
+    }
+
+    let transcript = call_transcript;
+
+    // If call_id provided, fetch transcript from DB
+    if (call_id && !transcript) {
+      const transcripts = await req.prisma.callTranscript.findMany({
+        where: { callId: call_id },
+        orderBy: { timestamp: 'asc' }
+      });
+      transcript = transcripts.map(t => `${t.speaker === 'ai' ? 'Agent' : 'Customer'}: ${t.content}`).join('\n');
+    }
+
+    if (!transcript) return res.status(400).json({ error: 'No transcript content found' });
+
+    const openrouter = getOpenRouterClient();
+
+    const completion = await openrouter.chat.completions.create({
+      model: process.env.AI_MODEL || 'anthropic/claude-3-5-sonnet-20241022',
+      messages: [
+        {
+          role: 'system',
+          content: `You are an expert at analyzing customer support phone calls. Analyze the transcript and respond ONLY with valid JSON:
+{
+  "summary": "<2-3 sentence summary of the call>",
+  "mainIssue": "<primary customer issue>",
+  "resolution": "<what was resolved or next steps>",
+  "sentiment": "<positive|neutral|negative>",
+  "sentimentScore": <-1.0 to 1.0>,
+  "actionItems": ["<action1>", "<action2>"],
+  "followUpTasks": ["<task1>", "<task2>"],
+  "escalationRequired": <true|false>,
+  "callQuality": "<good|average|poor>",
+  "keyTopics": ["<topic1>", "<topic2>"]
+}`
+        },
+        { role: 'user', content: `Call Transcript:\n${transcript}` }
+      ],
+      max_tokens: 500,
+      temperature: 0.3,
+    });
+
+    let analysis;
+    try {
+      const raw = completion.choices[0].message.content.trim();
+      const match = raw.match(/\{[\s\S]*\}/);
+      analysis = JSON.parse(match ? match[0] : raw);
+    } catch {
+      analysis = { summary: completion.choices[0].message.content, actionItems: [], followUpTasks: [] };
+    }
+
+    // If call_id provided, update the call record
+    if (call_id) {
+      await req.prisma.call.update({
+        where: { id: call_id },
+        data: { summary: analysis.summary, sentiment: analysis.sentiment }
+      });
+    }
+
+    res.json({ callId: call_id || null, analysis });
+  } catch (error) {
+    console.error('Voice AI summary error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 export default router;

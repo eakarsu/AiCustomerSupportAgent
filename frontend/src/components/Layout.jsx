@@ -22,7 +22,8 @@ import {
   Sparkles,
   Menu,
   X,
-  Key
+  Key,
+  LayoutGrid
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -39,6 +40,7 @@ const navItems = [
   { path: '/team', icon: UserCircle, label: 'Team' },
   { path: '/ai-chat', icon: Bot, label: 'AI Chat' },
   { path: '/analytics', icon: BarChart3, label: 'Analytics' },
+  { path: '/custom-views', icon: LayoutGrid, label: 'Support Views' },
   { path: '/settings', icon: Settings, label: 'Settings' },
 ];
 
@@ -49,6 +51,7 @@ const aiFeatures = [
   { path: '/ai-quality', icon: Star, label: 'Quality Scorer', color: 'text-yellow-500' },
   { path: '/ai-escalation', icon: Route, label: 'Escalation Router', color: 'text-red-600' },
   { path: '/ai-shopping', icon: ShoppingCart, label: 'Shopping Assistant', color: 'text-pink-600' },
+  { path: '/ai-advanced', icon: Sparkles, label: 'AI Advanced', color: 'text-purple-600' },
 ];
 
 function Layout() {

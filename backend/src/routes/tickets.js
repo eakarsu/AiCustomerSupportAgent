@@ -1,6 +1,105 @@
 import express from 'express';
+import OpenAI from 'openai';
 
 const router = express.Router();
+
+const MODEL = 'anthropic/claude-3-5-sonnet-20241022';
+
+const getOpenRouterClient = () => new OpenAI({
+  baseURL: 'https://openrouter.ai/api/v1',
+  apiKey: process.env.OPENROUTER_API_KEY,
+  defaultHeaders: {
+    'HTTP-Referer': process.env.APP_URL || 'http://localhost:3000',
+    'X-Title': 'AI Customer Support Agent'
+  }
+});
+
+// Auto-tag ticket category based on first message intent
+async function autoTagTicketIntent(prisma, ticketId, text) {
+  try {
+    const openrouter = getOpenRouterClient();
+    const completion = await openrouter.chat.completions.create({
+      model: MODEL,
+      messages: [
+        {
+          role: 'system',
+          content: 'Classify the intent. Respond ONLY with valid JSON: {"intent":"<billing|technical|account|complaint|inquiry|other>","confidence":<0-1>,"suggestedRouting":"<team>","priority":"<low|medium|high|urgent>"}'
+        },
+        { role: 'user', content: text }
+      ],
+      max_tokens: 100,
+      temperature: 0,
+    });
+    const raw = completion.choices[0].message.content.trim();
+    const match = raw.match(/\{[\s\S]*\}/);
+    const intentData = JSON.parse(match ? match[0] : raw);
+
+    // Update ticket priority if AI suggests higher
+    const priorityRank = { low: 1, medium: 2, high: 3, urgent: 4 };
+    const ticket = await prisma.ticket.findUnique({ where: { id: ticketId }, select: { priority: true } });
+    if (ticket && priorityRank[intentData.priority] > priorityRank[ticket.priority]) {
+      await prisma.ticket.update({ where: { id: ticketId }, data: { priority: intentData.priority } });
+    }
+
+    // Save intent as AI conversation record
+    await prisma.aiConversation.create({
+      data: {
+        sessionId: `intent-${ticketId}`,
+        question: `[Intent Detection] Ticket ${ticketId}`,
+        response: JSON.stringify(intentData),
+        intent: intentData.intent,
+        confidence: intentData.confidence,
+      }
+    });
+  } catch (err) {
+    console.error('Auto intent tagging failed:', err.message);
+  }
+}
+
+// Auto-run sentiment update on new message
+async function asyncSentimentUpdate(prisma, ticketId) {
+  try {
+    const ticket = await prisma.ticket.findUnique({
+      where: { id: ticketId },
+      include: { messages: { orderBy: { createdAt: 'asc' } } }
+    });
+    if (!ticket || ticket.messages.length === 0) return;
+
+    const openrouter = getOpenRouterClient();
+    const conversation = ticket.messages
+      .map((m, i) => `[${i + 1}] ${m.isFromAgent ? 'Agent' : 'Customer'}: ${m.content}`)
+      .join('\n');
+
+    const completion = await openrouter.chat.completions.create({
+      model: MODEL,
+      messages: [
+        {
+          role: 'system',
+          content: 'Analyze conversation sentiment. Respond ONLY with JSON: {"score":<-1 to 1>,"label":"<very_negative|negative|neutral|positive|very_positive>","urgencyLevel":"<low|medium|high|critical>","trend":"<improving|stable|deteriorating>"}'
+        },
+        { role: 'user', content: conversation }
+      ],
+      max_tokens: 100,
+      temperature: 0,
+    });
+
+    const raw = completion.choices[0].message.content.trim();
+    const match = raw.match(/\{[\s\S]*\}/);
+    const sentimentData = JSON.parse(match ? match[0] : raw);
+
+    await prisma.aiConversation.create({
+      data: {
+        sessionId: `sentiment-auto-${ticketId}`,
+        question: `[Auto Sentiment Update] Ticket ${ticketId}`,
+        response: JSON.stringify(sentimentData),
+        intent: 'sentiment_analysis',
+        confidence: Math.abs(sentimentData.score || 0),
+      }
+    });
+  } catch (err) {
+    console.error('Async sentiment update failed:', err.message);
+  }
+}
 
 // Get all tickets with pagination, search, sort
 router.get('/', async (req, res) => {
@@ -253,6 +352,11 @@ router.post('/', async (req, res) => {
       }
     });
 
+    // Auto-tag intent from subject + description (non-blocking)
+    if (subject || description) {
+      setImmediate(() => autoTagTicketIntent(req.prisma, ticket.id, `${subject || ''} ${description || ''}`.trim()));
+    }
+
     res.status(201).json(ticket);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -327,6 +431,9 @@ router.post('/:id/messages', async (req, res) => {
       where: { id: req.params.id },
       data: { updatedAt: new Date() }
     });
+
+    // Async sentiment update on every new message (non-blocking)
+    setImmediate(() => asyncSentimentUpdate(req.prisma, req.params.id));
 
     res.status(201).json(message);
   } catch (error) {

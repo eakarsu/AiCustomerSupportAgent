@@ -26,3 +26,16 @@ export const passwordResetLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+// AI endpoints rate limiter — each call costs tokens; cap at 30/15min per IP
+export const aiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  message: { error: 'AI rate limit reached. Please wait before making more AI requests.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => {
+    // Skip rate limit for GET requests (history, feedback reads)
+    return req.method === 'GET';
+  },
+});
