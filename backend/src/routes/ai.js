@@ -5,7 +5,8 @@ import { body, param, query, validationResult } from 'express-validator';
 const router = express.Router();
 
 // ─── Model ────────────────────────────────────────────────────────────────────
-const MODEL = 'anthropic/claude-3-5-sonnet-20241022';
+// Lazy-evaluated so dotenv (loaded in src/index.js) has populated env first.
+const getModel = () => process.env.OPENROUTER_MODEL || process.env.AI_MODEL || 'anthropic/claude-3-5-sonnet-20241022';
 
 // ─── Validation helpers ───────────────────────────────────────────────────────
 function validateRequest(req, res, next) {
@@ -93,7 +94,7 @@ async function searchKnowledgeBase(prisma, query) {
 async function detectIntentInternal(openrouter, message) {
   try {
     const completion = await openrouter.chat.completions.create({
-      model: MODEL,
+      model: getModel(),
       messages: [
         {
           role: 'system',
@@ -141,7 +142,7 @@ ${knowledgeContext}
 ${context ? `\nAdditional context: ${context}` : ''}`;
 
     const completion = await openrouter.chat.completions.create({
-      model: MODEL,
+      model: getModel(),
       messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: message }],
       max_tokens: 1024,
       temperature: 0.7,
@@ -202,7 +203,7 @@ ${conversationHistory}
 Provide a helpful, ${tone || 'professional'} response.`;
 
     const completion = await openrouter.chat.completions.create({
-      model: MODEL,
+      model: getModel(),
       messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: 'Generate a response.' }],
       max_tokens: 512,
       temperature: 0.7,
@@ -246,7 +247,7 @@ router.post('/sentiment', sentimentValidation, async (req, res) => {
       .join('\n');
 
     const completion = await openrouter.chat.completions.create({
-      model: MODEL,
+      model: getModel(),
       messages: [
         {
           role: 'system',
@@ -313,7 +314,7 @@ router.post('/analyze-sentiment', [
     const openrouter = getOpenRouterClient();
 
     const completion = await openrouter.chat.completions.create({
-      model: MODEL,
+      model: getModel(),
       messages: [
         { role: 'system', content: 'Analyze the sentiment of the following text. Respond with only one word: positive, negative, or neutral.' },
         { role: 'user', content: text }
@@ -358,7 +359,7 @@ router.post('/summarize-ticket', async (req, res) => {
     const conversationHistory = ticket.messages.map(m => `${m.isFromAgent ? 'Agent' : 'Customer'}: ${m.content}`).join('\n');
 
     const completion = await openrouter.chat.completions.create({
-      model: MODEL,
+      model: getModel(),
       messages: [
         { role: 'system', content: 'Summarize this customer support ticket in 2-3 sentences. Focus on the main issue and current status.' },
         { role: 'user', content: `Subject: ${ticket.subject}\n\n${conversationHistory}` }
@@ -383,7 +384,7 @@ router.post('/suggest-category', async (req, res) => {
     const categoryList = categories.map(c => `- ${c.name}: ${c.description || 'No description'}`).join('\n');
 
     const completion = await openrouter.chat.completions.create({
-      model: MODEL,
+      model: getModel(),
       messages: [
         { role: 'system', content: `Suggest the most appropriate category from the list. Respond with only the category name.\n\nAvailable categories:\n${categoryList}` },
         { role: 'user', content: `Subject: ${subject}\nDescription: ${description}` }
@@ -407,7 +408,7 @@ router.post('/suggest-priority', async (req, res) => {
     const openrouter = getOpenRouterClient();
 
     const completion = await openrouter.chat.completions.create({
-      model: MODEL,
+      model: getModel(),
       messages: [
         { role: 'system', content: 'Analyze the urgency of the following support ticket. Respond with only one word: low, medium, high, or urgent.' },
         { role: 'user', content: `Subject: ${subject}\nDescription: ${description}` }
@@ -430,7 +431,7 @@ router.post('/generate-article', async (req, res) => {
     const openrouter = getOpenRouterClient();
 
     const completion = await openrouter.chat.completions.create({
-      model: MODEL,
+      model: getModel(),
       messages: [
         { role: 'system', content: 'You are a technical writer. Generate a helpful knowledge base article with: Title, Summary (1-2 sentences), and Content (detailed with steps where applicable).' },
         { role: 'user', content: `Topic: ${topic}\nKeywords: ${keywords?.join(', ') || 'N/A'}` }
@@ -495,7 +496,7 @@ router.post('/check-escalation', escalationValidation, async (req, res) => {
     const recentMessages = [...ticket.messages].reverse().map(m => `${m.isFromAgent ? 'Agent' : 'Customer'}: ${m.content}`).join('\n');
 
     const completion = await openrouter.chat.completions.create({
-      model: MODEL,
+      model: getModel(),
       messages: [
         {
           role: 'system',

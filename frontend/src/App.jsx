@@ -47,6 +47,22 @@ import GapLimitedCrmIntegrationNoSalesforceHubspotAdapter from './pages/GapLimit
 import GapLimitedWorkflowAutomationAutoEscalationAutoCloseAuto from './pages/GapLimitedWorkflowAutomationAutoEscalationAutoCloseAuto';
 import GapNoPaymentBillingModuleExposedStripeOnlyStubbed from './pages/GapNoPaymentBillingModuleExposedStripeOnlyStubbed';
 import CustomViewsPage from './pages/CustomViewsPage';
+import RefundEscalationPredictor from './pages/RefundEscalationPredictor';
+
+import CodexCustomVizFeature from './pages/CodexCustomVizFeature';
+import CodexOperationsFeature from './pages/CodexOperationsFeature';
+
+// === CRM Module Pages ===
+import CrmDashboard from './pages/crm/CrmDashboard';
+import CrmContacts from './pages/crm/CrmContacts';
+import CrmAccounts from './pages/crm/CrmAccounts';
+import CrmOpportunities from './pages/crm/CrmOpportunities';
+import CrmPipelineStages from './pages/crm/CrmPipelineStages';
+import CrmActivities from './pages/crm/CrmActivities';
+import CrmEmailSync from './pages/crm/CrmEmailSync';
+import CrmCalendarSync from './pages/crm/CrmCalendarSync';
+import CrmQuotes from './pages/crm/CrmQuotes';
+import CrmForecasting from './pages/crm/CrmForecasting';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -79,6 +95,9 @@ function AppRoutes() {
 
   return (
     <Routes>
+        <Route path="/codex/custom-viz" element={<ProtectedRoute><CodexCustomVizFeature /></ProtectedRoute>} />
+        <Route path="/codex/operations" element={<ProtectedRoute><CodexOperationsFeature /></ProtectedRoute>} />
+
       <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <Login />} />
       <Route
         path="/"
@@ -117,6 +136,18 @@ function AppRoutes() {
         <Route path="ai-shopping" element={<AiShoppingAssistant />} />
         <Route path="ai-advanced" element={<AiAdvancedFeatures />} />
         <Route path="custom-views" element={<CustomViewsPage />} />
+        <Route path="refund-escalation-predictor" element={<RefundEscalationPredictor />} />
+        {/* CRM Module */}
+        <Route path="crm" element={<CrmDashboard />} />
+        <Route path="crm/contacts" element={<CrmContacts />} />
+        <Route path="crm/accounts" element={<CrmAccounts />} />
+        <Route path="crm/opportunities" element={<CrmOpportunities />} />
+        <Route path="crm/pipeline-stages" element={<CrmPipelineStages />} />
+        <Route path="crm/activities" element={<CrmActivities />} />
+        <Route path="crm/email-sync" element={<CrmEmailSync />} />
+        <Route path="crm/calendar-sync" element={<CrmCalendarSync />} />
+        <Route path="crm/quotes" element={<CrmQuotes />} />
+        <Route path="crm/forecasting" element={<CrmForecasting />} />
       </Route>
     
         {/* // === Batch 02 Gaps & Frontend Mounts === */}

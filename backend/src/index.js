@@ -107,6 +107,18 @@ app.use('/api/ai', (await import('./routes/churnPrediction.js')).default);
 // Custom Views (support-domain custom features)
 app.use('/api/custom-views', (await import('./routes/customViews.js')).default);
 
+// ─── AI-Native CRM ────────────────────────────────────────────────────────────
+app.use('/api/crm/contacts', (await import('./routes/crmFeat_contacts.js')).default);
+app.use('/api/crm/accounts', (await import('./routes/crmFeat_accounts.js')).default);
+app.use('/api/crm/opportunities', (await import('./routes/crmFeat_opportunities.js')).default);
+app.use('/api/crm/pipeline-stages', (await import('./routes/crmFeat_pipelineStages.js')).default);
+app.use('/api/crm/activities', (await import('./routes/crmFeat_activities.js')).default);
+app.use('/api/crm/email-sync', (await import('./routes/crmFeat_emailSync.js')).default);
+app.use('/api/crm/calendar-sync', (await import('./routes/crmFeat_calendarSync.js')).default);
+app.use('/api/crm/quotes', (await import('./routes/crmFeat_quotes.js')).default);
+app.use('/api/crm/forecasting', (await import('./routes/crmFeat_forecasting.js')).default);
+app.use('/api/refund-escalation-predictor', (await import('./routes/refundEscalationPredictor.js')).default);
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

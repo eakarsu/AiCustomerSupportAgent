@@ -23,7 +23,16 @@ import {
   Menu,
   X,
   Key,
-  LayoutGrid
+  LayoutGrid,
+  Building2,
+  TrendingUp,
+  GitBranch,
+  Activity,
+  Inbox,
+  Calendar,
+  FileText,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -44,6 +53,19 @@ const navItems = [
   { path: '/settings', icon: Settings, label: 'Settings' },
 ];
 
+const crmModules = [
+  { path: '/crm', icon: LayoutDashboard, label: 'CRM Dashboard', color: 'text-indigo-600' },
+  { path: '/crm/contacts', icon: Users, label: 'Contacts', color: 'text-blue-600' },
+  { path: '/crm/accounts', icon: Building2, label: 'Accounts', color: 'text-indigo-600' },
+  { path: '/crm/opportunities', icon: TrendingUp, label: 'Opportunities', color: 'text-green-600' },
+  { path: '/crm/pipeline-stages', icon: GitBranch, label: 'Pipeline Stages', color: 'text-purple-600' },
+  { path: '/crm/activities', icon: Activity, label: 'Activities', color: 'text-orange-600' },
+  { path: '/crm/email-sync', icon: Inbox, label: 'Email Sync', color: 'text-teal-600' },
+  { path: '/crm/calendar-sync', icon: Calendar, label: 'Calendar Sync', color: 'text-pink-600' },
+  { path: '/crm/quotes', icon: FileText, label: 'Quotes', color: 'text-amber-600' },
+  { path: '/crm/forecasting', icon: BarChart3, label: 'Forecasting', color: 'text-rose-600' },
+];
+
 const aiFeatures = [
   { path: '/ai-classifier', icon: Tags, label: 'Ticket Classifier', color: 'text-indigo-600' },
   { path: '/ai-predictor', icon: Lightbulb, label: 'Resolution Predictor', color: 'text-amber-500' },
@@ -59,6 +81,7 @@ function Layout() {
   const { success } = useToast();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [crmOpen, setCrmOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -104,6 +127,34 @@ function Layout() {
             <span className="truncate">{item.label}</span>
           </NavLink>
         ))}
+
+        {/* CRM Section */}
+        <div className="pt-4 mt-4 border-t border-gray-200">
+          <button
+            onClick={() => setCrmOpen(o => !o)}
+            className="w-full flex items-center justify-between px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider hover:text-gray-600 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <Building2 className="w-4 h-4" />
+              CRM
+            </div>
+            {crmOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+          </button>
+          {crmOpen && crmModules.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.path === '/crm'}
+              onClick={closeSidebar}
+              className={({ isActive }) =>
+                `sidebar-link ${isActive ? 'active' : ''}`
+              }
+            >
+              <item.icon className={`w-5 h-5 ${item.color}`} />
+              <span className="truncate">{item.label}</span>
+            </NavLink>
+          ))}
+        </div>
 
         {/* AI Features Section */}
         <div className="pt-4 mt-4 border-t border-gray-200">

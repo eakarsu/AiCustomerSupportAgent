@@ -414,3 +414,259 @@ model Order {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
+
+// ─── CRM Models ───────────────────────────────────────────────────────────────
+
+model CrmContact {
+  id              String   @id @default(uuid())
+  firstName       String
+  lastName        String
+  email           String?
+  phone           String?
+  title           String?
+  department      String?
+  accountId       String?
+  ownerId         String?
+  leadSource      String?
+  status          String   @default("active")
+  buyerPersona    String?
+  engagementScore Float?
+  leadFitScore    Float?
+  lastActivityAt  DateTime?
+  enrichedAt      DateTime?
+  isDuplicate     Boolean  @default(false)
+  mergedIntoId    String?
+  isArchived      Boolean  @default(false)
+  archivedAt      DateTime?
+  customFields    Json?
+  aiSummary       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  account         CrmAccount?    @relation(fields: [accountId], references: [id])
+  opportunities   CrmOpportunity[]
+  activities      CrmActivity[]
+  quotes          CrmQuote[]
+}
+
+model CrmAccount {
+  id                  String   @id @default(uuid())
+  name                String
+  domain              String?
+  industry            String?
+  accountTier         String   @default("standard")
+  parentAccountId     String?
+  billingAddress      String?
+  website             String?
+  phone               String?
+  employeeCount       Int?
+  annualRevenue       Float?
+  ownerId             String?
+  status              String   @default("active")
+  strategicScore      Float?
+  expansionRevenue    Float?
+  churnRisk           Float?
+  healthScore         Float?
+  isArchived          Boolean  @default(false)
+  archivedAt          DateTime?
+  customFields        Json?
+  aiSummary           String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  parentAccount       CrmAccount?    @relation("AccountHierarchy", fields: [parentAccountId], references: [id])
+  childAccounts       CrmAccount[]   @relation("AccountHierarchy")
+  contacts            CrmContact[]
+  opportunities       CrmOpportunity[]
+  activities          CrmActivity[]
+  quotes              CrmQuote[]
+}
+
+model CrmPipelineStage {
+  id              String   @id @default(uuid())
+  name            String
+  order           Int
+  probability     Float    @default(0)
+  pipelineId      String?
+  entryConditions String?
+  exitConditions  String?
+  automationRules String?
+  isActive        Boolean  @default(true)
+  isArchived      Boolean  @default(false)
+  archivedAt      DateTime?
+  aiSummary       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  opportunities   CrmOpportunity[]
+}
+
+model CrmOpportunity {
+  id              String   @id @default(uuid())
+  name            String
+  accountId       String?
+  contactId       String?
+  stageId         String?
+  ownerId         String?
+  amount          Float?
+  closeDate       DateTime?
+  probability     Float?
+  forecastCategory String  @default("pipeline")
+  type            String?
+  leadSource      String?
+  nextStep        String?
+  lossReason      String?
+  winProbScore    Float?
+  dealRiskScore   Float?
+  isStalled       Boolean  @default(false)
+  isSingleThread  Boolean  @default(false)
+  isArchived      Boolean  @default(false)
+  archivedAt      DateTime?
+  customFields    Json?
+  aiSummary       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  account         CrmAccount?       @relation(fields: [accountId], references: [id])
+  contact         CrmContact?       @relation(fields: [contactId], references: [id])
+  stage           CrmPipelineStage? @relation(fields: [stageId], references: [id])
+  activities      CrmActivity[]
+  quotes          CrmQuote[]
+}
+
+model CrmActivity {
+  id              String   @id @default(uuid())
+  type            String
+  subject         String
+  description     String?
+  status          String   @default("open")
+  dueAt           DateTime?
+  completedAt     DateTime?
+  duration        Int?
+  outcome         String?
+  contactId       String?
+  accountId       String?
+  opportunityId   String?
+  ownerId         String?
+  engagementQuality Float?
+  sentiment       String?
+  isCoachingMoment Boolean @default(false)
+  isArchived      Boolean  @default(false)
+  archivedAt      DateTime?
+  customFields    Json?
+  aiSummary       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  contact         CrmContact?     @relation(fields: [contactId], references: [id])
+  account         CrmAccount?     @relation(fields: [accountId], references: [id])
+  opportunity     CrmOpportunity? @relation(fields: [opportunityId], references: [id])
+}
+
+model CrmEmailSync {
+  id              String   @id @default(uuid())
+  messageId       String   @unique
+  threadId        String?
+  subject         String?
+  fromAddress     String?
+  toAddresses     String[]
+  ccAddresses     String[]
+  body            String?
+  direction       String   @default("inbound")
+  status          String   @default("synced")
+  intent          String?
+  sentiment       String?
+  hasAttachments  Boolean  @default(false)
+  attachments     Json?
+  bouncedAt       DateTime?
+  contactId       String?
+  accountId       String?
+  opportunityId   String?
+  isArchived      Boolean  @default(false)
+  archivedAt      DateTime?
+  syncedAt        DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model CrmCalendarEvent {
+  id              String   @id @default(uuid())
+  externalId      String?  @unique
+  provider        String   @default("google")
+  title           String
+  description     String?
+  startAt         DateTime
+  endAt           DateTime
+  timezone        String?
+  meetingType     String?
+  outcome         String?
+  qualityScore    Float?
+  attendees       Json?
+  contactId       String?
+  accountId       String?
+  opportunityId   String?
+  ownerId         String?
+  isDoubleBooked  Boolean  @default(false)
+  isArchived      Boolean  @default(false)
+  archivedAt      DateTime?
+  aiSummary       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model CrmQuote {
+  id              String   @id @default(uuid())
+  quoteNumber     String   @unique
+  name            String
+  status          String   @default("draft")
+  contactId       String?
+  accountId       String?
+  opportunityId   String?
+  ownerId         String?
+  lineItems       Json?
+  subtotal        Float?
+  discount        Float?
+  tax             Float?
+  total           Float?
+  validUntil      DateTime?
+  approvedBy      String?
+  approvedAt      DateTime?
+  sentAt          DateTime?
+  acceptedAt      DateTime?
+  rejectedAt      DateTime?
+  marginScore     Float?
+  acceptanceProbability Float?
+  isArchived      Boolean  @default(false)
+  archivedAt      DateTime?
+  customFields    Json?
+  aiSummary       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  contact         CrmContact?     @relation(fields: [contactId], references: [id])
+  account         CrmAccount?     @relation(fields: [accountId], references: [id])
+  opportunity     CrmOpportunity? @relation(fields: [opportunityId], references: [id])
+}
+
+model CrmForecast {
+  id                  String   @id @default(uuid())
+  period              String
+  periodStart         DateTime
+  periodEnd           DateTime
+  ownerId             String?
+  teamId              String?
+  commitAmount        Float?
+  bestCaseAmount      Float?
+  pipelineAmount      Float?
+  closedAmount        Float?
+  quotaAmount         Float?
+  attainmentPct       Float?
+  forecastAccuracy    Float?
+  isSandbagged        Boolean  @default(false)
+  waterfallData       Json?
+  aiNarrative         String?
+  isArchived          Boolean  @default(false)
+  archivedAt          DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
