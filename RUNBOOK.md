@@ -1,0 +1,7 @@
+# Authoritative support runbook
+
+Install from lockfiles, generate Prisma, copy `.env.example` to `.env`, replace all example secrets/keys, and run `npm run migrate` in `backend/`. Start with `./start.sh backend`; it does not push schema, seed, install, or kill processes and fails if `support_cases` is absent.
+
+Use `/api/authoritative/support`. Tokens bind tenant and customer subject while the current role is reloaded from the database. Public registration creates an isolated customer only; staff roles are provisioned out of band. Consequential replies require independent human approval. Case bodies and call transcripts are AES-256-GCM encrypted. Call analysis requires dual consent, timestamped transcripts, SHA-256 recording identity, model version, a confirmed voice-provider receipt, the advisory label, and an explicit supervisor disposition.
+
+Configure email, SMS/voice, chat, Salesforce, and HubSpot adapters independently. Provider webhooks call `/api/authoritative/support/webhooks/:provider` and sign `tenantId.rawRequestBody` with `SUPPORT_WEBHOOK_SECRET`; payload hashes and idempotency keys are reconciled to durable deliveries. Alert on unassigned cases, escalation misses, consent withdrawal/deletion receipts, retry/dead-letter growth, call-analysis review age, bias regressions, and audit failure. Fix the provider or case state before replay and preserve idempotency keys. Legacy/generated/direct-AI and incomplete voice endpoints are quarantined.

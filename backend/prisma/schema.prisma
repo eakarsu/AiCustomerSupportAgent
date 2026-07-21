@@ -13,6 +13,8 @@ model User {
   password  String
   name      String
   role      String   @default("agent")
+  tenantId  String?
+  subjectId String?
   avatar    String?
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())

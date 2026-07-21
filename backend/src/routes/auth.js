@@ -43,11 +43,12 @@ router.post('/login', authLimiter, loginValidation, async (req, res) => {
     if (!isValid) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+    if (!user.tenantId) return res.status(403).json({ error: 'Account has not been assigned to a tenant' });
 
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET || 'secret',
-      { expiresIn: '7d' }
+      { id: user.id, email: user.email, role: user.role, tenantId: user.tenantId, subjectId: user.subjectId },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
     );
 
     res.json({
@@ -68,7 +69,8 @@ router.post('/login', authLimiter, loginValidation, async (req, res) => {
 // Register
 router.post('/register', authLimiter, registerValidation, async (req, res) => {
   try {
-    const { email, password, name, role } = req.body;
+    const { email, password, name } = req.body;
+    if (!email || !name || typeof password !== 'string' || password.length < 12) return res.status(422).json({ error: 'Valid email, name, and password of at least 12 characters are required' });
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await req.prisma.user.create({
@@ -76,9 +78,12 @@ router.post('/register', authLimiter, registerValidation, async (req, res) => {
         email,
         password: hashedPassword,
         name,
-        role: role || 'agent'
+        role: 'customer',
+        tenantId: crypto.randomUUID()
       }
     });
+    await req.prisma.user.update({ where: { id: user.id }, data: { subjectId: user.id } });
+    user.subjectId = user.id;
 
     // Create email verification token
     const verificationToken = crypto.randomBytes(32).toString('hex');
@@ -92,9 +97,9 @@ router.post('/register', authLimiter, registerValidation, async (req, res) => {
     });
 
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET || 'secret',
-      { expiresIn: '7d' }
+      { id: user.id, email: user.email, role: user.role, tenantId: user.tenantId, subjectId: user.subjectId },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
     );
 
     res.status(201).json({
@@ -105,7 +110,6 @@ router.post('/register', authLimiter, registerValidation, async (req, res) => {
         name: user.name,
         role: user.role
       },
-      verificationToken, // In production, send via email
       message: 'Account created. Please verify your email.'
     });
   } catch (error) {
@@ -125,7 +129,7 @@ router.get('/me', async (req, res) => {
     }
 
     const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Check blacklist
     const blacklisted = await req.prisma.blacklistedToken.findUnique({
@@ -142,6 +146,8 @@ router.get('/me', async (req, res) => {
         email: true,
         name: true,
         role: true,
+        tenantId: true,
+        subjectId: true,
         avatar: true,
         createdAt: true
       }
@@ -150,6 +156,7 @@ router.get('/me', async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
+    if (user.tenantId !== decoded.tenantId) return res.status(403).json({ error: 'Tenant identity mismatch' });
 
     res.json(user);
   } catch (error) {
@@ -199,7 +206,7 @@ router.post('/password-reset/request', passwordResetLimiter, [
     // In production, send email with reset link
     res.json({
       message: 'If an account exists with this email, a reset link has been sent.',
-      resetToken, // Only for demo - remove in production
+      delivery: 'out_of_band',
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

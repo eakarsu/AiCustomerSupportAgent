@@ -1,0 +1,14 @@
+{
+  "datasetVersion": "support-evaluation.v1",
+  "limits": { "correctness": 0.9, "edgeCaseRecall": 0.9, "latencyMs": 2000, "resolutionRate": 0.8, "maxGroupDelta": 0.1 },
+  "baseline": { "correctness": 1, "edgeCaseRecall": 1, "escalationRecall": 1, "latencyMs": 100, "resolutionRate": 1, "maxGroupDelta": 0 },
+  "cases": [
+    { "name": "accepted", "overrides": {}, "accepted": true },
+    { "name": "correctness", "overrides": { "correctness": 0.5 }, "failure": "correctness" },
+    { "name": "edge-cases", "overrides": { "edgeCaseRecall": 0.5 }, "failure": "edge_cases" },
+    { "name": "mandatory-escalation", "overrides": { "escalationRecall": 0.99 }, "failure": "escalation" },
+    { "name": "latency", "overrides": { "latencyMs": 2001 }, "failure": "latency" },
+    { "name": "resolution-outcome", "overrides": { "resolutionRate": 0.5 }, "failure": "outcome" },
+    { "name": "group-delta", "overrides": { "maxGroupDelta": 0.2 }, "failure": "bias" }
+  ]
+}
