@@ -6,6 +6,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { PrismaClient } from '@prisma/client';
+import runtimeAi from './routes/runtimeAi.js';
 
 dotenv.config({ path: path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.env') });
 
@@ -38,6 +39,7 @@ app.get('/api/health', async (_req, res) => {
 });
 app.use('/api/auth', authRoutes);
 app.use('/api/authoritative/support/webhooks',webhookRoutes);
+app.use('/api/ai',authenticate,checkBlacklist,runtimeAi);
 app.use('/api/authoritative/support',authenticate,checkBlacklist,authoritative);
 app.use('/api', authenticate, checkBlacklist, (_req, res) => res.status(410).json({ error: 'legacy_route_quarantined', replacement: '/api/authoritative/support' }));
 app.use((err, _req, res, _next) => {
@@ -54,6 +56,6 @@ async function start() {
 
 const invokedPath = process.argv[1] ? fs.realpathSync(process.argv[1]) : '';
 if (invokedPath === fileURLToPath(import.meta.url)) start().catch(error => { console.error(error.message); process.exit(1); });
-process.on('SIGTERM', async () => { await prisma.$disconnect(); });
+process.on('SIGTERM', async () => { await prisma.$disconnect(); process.exit(0); });
 
 export { app, start, prisma };
