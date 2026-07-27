@@ -50,6 +50,7 @@ const navItems = [
   { path: '/ai-chat', icon: Bot, label: 'AI Chat' },
   { path: '/analytics', icon: BarChart3, label: 'Analytics' },
   { path: '/custom-views', icon: LayoutGrid, label: 'Support Views' },
+  { path: '/workforce-transition', icon: TrendingUp, label: 'Workforce Transition' },
   { path: '/settings', icon: Settings, label: 'Settings' },
 ];
 

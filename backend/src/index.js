@@ -16,6 +16,7 @@ if (testMode && !process.env.SUPPORT_WEBHOOK_SECRET) process.env.SUPPORT_WEBHOOK
 if (testMode && !process.env.SUPPORT_DATA_KEY) process.env.SUPPORT_DATA_KEY = process.env.MEMORY_ENCRYPTION_KEY_BASE64;
 
 const { authenticate, checkBlacklist } = await import('./middleware/auth.js');
+const { default: workforceTransition } = await import('./routes/workforceTransition.js');
 const authRoutes = (await import('./routes/auth.js')).default;
 const authoritative = (await import('./routes/authoritative.js')).default;
 const webhookRoutes = (await import('./routes/supportWebhooks.js')).default;
@@ -41,6 +42,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/authoritative/support/webhooks',webhookRoutes);
 app.use('/api/ai',authenticate,checkBlacklist,runtimeAi);
 app.use('/api/authoritative/support',authenticate,checkBlacklist,authoritative);
+app.use('/api/authoritative/support/workforce-transition',authenticate,checkBlacklist,workforceTransition);
 app.use('/api', authenticate, checkBlacklist, (_req, res) => res.status(410).json({ error: 'legacy_route_quarantined', replacement: '/api/authoritative/support' }));
 app.use((err, _req, res, _next) => {
   console.error(err.message);

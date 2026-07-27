@@ -63,6 +63,7 @@ import CrmEmailSync from './pages/crm/CrmEmailSync';
 import CrmCalendarSync from './pages/crm/CrmCalendarSync';
 import CrmQuotes from './pages/crm/CrmQuotes';
 import CrmForecasting from './pages/crm/CrmForecasting';
+import WorkforceTransition from './pages/WorkforceTransition';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -136,6 +137,7 @@ function AppRoutes() {
         <Route path="ai-shopping" element={<AiShoppingAssistant />} />
         <Route path="ai-advanced" element={<AiAdvancedFeatures />} />
         <Route path="custom-views" element={<CustomViewsPage />} />
+        <Route path="workforce-transition" element={<WorkforceTransition />} />
         <Route path="refund-escalation-predictor" element={<RefundEscalationPredictor />} />
         {/* CRM Module */}
         <Route path="crm" element={<CrmDashboard />} />
