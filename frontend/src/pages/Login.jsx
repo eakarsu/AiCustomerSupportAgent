@@ -277,6 +277,7 @@ function Login() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
+                  required
                   className={`w-full pl-10 pr-4 py-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none text-sm transition-shadow hover:border-gray-300 ${formErrors.email ? 'border-red-400' : 'border-gray-200'}`}
                 />
               </div>
@@ -298,6 +299,7 @@ function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
+                  required
                   className={`w-full pl-10 pr-10 py-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none text-sm transition-shadow hover:border-gray-300 ${formErrors.password ? 'border-red-400' : 'border-gray-200'}`}
                 />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -340,7 +342,7 @@ function Login() {
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-all text-sm font-medium"
           >
             <Zap className="w-4 h-4 text-amber-500" />
-            Fill Demo Credentials
+            Auto Fill Demo Credentials
           </button>
 
           <p className="text-center text-xs text-gray-400 mt-4">
