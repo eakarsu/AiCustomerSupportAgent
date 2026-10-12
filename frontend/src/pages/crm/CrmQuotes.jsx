@@ -1,3 +1,4 @@
+import FormattedAIReport from "../../components/FormattedAIReport";
 import { useState, useEffect, useCallback } from 'react';
 import { Search, Plus, FileText, DollarSign, Sparkles, ChevronRight, Loader2, Download, Send, CheckCircle, XCircle } from 'lucide-react';
 import { crmQuotesApi } from '../../services/crmApi';
@@ -225,7 +226,7 @@ export default function CrmQuotes() {
           <div className="flex-1 bg-gray-50 rounded-lg p-4 overflow-y-auto">
             {aiLoading && <div className="flex items-center justify-center h-full"><Loader2 className="w-6 h-6 animate-spin text-purple-500" /></div>}
             {!aiLoading && !aiResult && <p className="text-sm text-gray-400 text-center mt-8">Select an AI tool from the left</p>}
-            {!aiLoading && aiResult && <pre className="text-xs text-gray-800 whitespace-pre-wrap">{JSON.stringify(aiResult, null, 2)}</pre>}
+            {!aiLoading && aiResult && <FormattedAIReport response={aiResult} />}
           </div>
         </div>
       </Modal>

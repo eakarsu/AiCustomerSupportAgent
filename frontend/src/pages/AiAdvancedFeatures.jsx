@@ -1,3 +1,6 @@
+
+import FullAIExamples, { useFullAIExamples } from "../components/FullAIExamples.jsx";
+import FormattedAIReport from "../components/FormattedAIReport";
 import { useState } from 'react';
 import { Sparkles, Loader2, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
 import { aiAdvancedApi } from '../services/api';
@@ -127,6 +130,8 @@ const FEATURES = [
 ];
 
 export default function AiAdvancedFeatures() {
+  const fullAIExamples = useFullAIExamples();
+
   const [expanded, setExpanded] = useState(FEATURES[0].id);
   const [forms, setForms] = useState({});
   const [results, setResults] = useState({});
@@ -157,7 +162,7 @@ export default function AiAdvancedFeatures() {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-6 max-w-6xl mx-auto" data-full-ai-workspace="AiAdvancedFeatures"><FullAIExamples controller={fullAIExamples} disabled={Boolean(Object.values(loading).some(Boolean))} />
       <div className="mb-6 flex items-center gap-3">
         <Sparkles className="text-indigo-600" size={32} />
         <div>
@@ -195,14 +200,14 @@ export default function AiAdvancedFeatures() {
                             className="w-full border border-gray-300 rounded p-2 font-mono text-xs"
                             rows={3}
                             value={(forms[feature.id] || {})[f.key] ?? f.default ?? ''}
-                            onChange={(e) => setField(feature.id, f.key, e.target.value)}
+                            onChange={(e) => setField(feature.id, f.key, e.target.value)} data-full-ai-field={fullAIExamples.bind({ current: (forms[feature.id] || {})[f.key] ?? f.default ?? '', change: (e) => setField(feature.id, f.key, e.target.value), label: "(forms[feature.id]", manual: false, json: false }, "p1-8133", [(typeof feature === 'object' ? feature?.key ?? feature?.name ?? feature?.id ?? '' : feature),(typeof f === 'object' ? f?.key ?? f?.name ?? f?.id ?? '' : f),feature.id,f.key].join(":"))}
                           />
                         ) : (
                           <input
                             type={f.type}
                             className="w-full border border-gray-300 rounded p-2"
                             value={(forms[feature.id] || {})[f.key] ?? f.default ?? ''}
-                            onChange={(e) => setField(feature.id, f.key, e.target.value)}
+                            onChange={(e) => setField(feature.id, f.key, e.target.value)} data-full-ai-field={fullAIExamples.bind({ current: (forms[feature.id] || {})[f.key] ?? f.default ?? '', change: (e) => setField(feature.id, f.key, e.target.value), label: "(forms[feature.id]", manual: false, json: false }, "p1-8543", [(typeof feature === 'object' ? feature?.key ?? feature?.name ?? feature?.id ?? '' : feature),(typeof f === 'object' ? f?.key ?? f?.name ?? f?.id ?? '' : f),feature.id,f.key].join(":"))}
                           />
                         )}
                       </div>
@@ -225,9 +230,7 @@ export default function AiAdvancedFeatures() {
                   )}
                   {result && !result.error && (
                     <div className="mt-3 p-3 bg-gray-50 border border-gray-200 rounded">
-                      <pre className="text-xs overflow-x-auto whitespace-pre-wrap">
-                        {JSON.stringify(result, null, 2)}
-                      </pre>
+                      <FormattedAIReport response={result} />
                     </div>
                   )}
                 </div>

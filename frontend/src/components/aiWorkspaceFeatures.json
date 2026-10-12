@@ -1,0 +1,242 @@
+[
+  {
+    "name": "AgentPerformancePredictionPage",
+    "id": "cf-agent-performance-prediction",
+    "title": "Agent performance prediction",
+    "description": "Prepare an advisory for agent performance prediction using only the case details and policy sources that you provide. Protect customer privacy, separate verified facts from assumptions, identify escalation and approval needs, and do not send messages, change accounts, or make commitments.",
+    "samples": [
+      {
+        "label": "Ticket triage",
+        "value": "Review the provided support issue for Agent performance prediction. This example contains no actual ticket, customer message, account, transcript, or case history. Identify evidence gaps, policy risks, and a human-reviewed next step; do not send or change anything."
+      },
+      {
+        "label": "Escalation review",
+        "value": "Assess a fictional Agent performance prediction scenario. Separate verified case facts from assumptions, identify the escalation owner and source policy needed, and prepare a draft only for human review. Do not include personal or payment data."
+      },
+      {
+        "label": "Quality assurance",
+        "value": "Prepare a supervisor review for Agent performance prediction. State what is known, what remains unverified, and what approval or follow-up is needed before an agent acts. No customer or case records are included in this example."
+      }
+    ]
+  },
+  {
+    "name": "CustomerHealthScoringPage",
+    "id": "cf-customer-health-scoring",
+    "title": "Customer health scoring",
+    "description": "Prepare an advisory for customer health scoring using only the case details and policy sources that you provide. Protect customer privacy, separate verified facts from assumptions, identify escalation and approval needs, and do not send messages, change accounts, or make commitments.",
+    "samples": [
+      {
+        "label": "Ticket triage",
+        "value": "Review the provided support issue for Customer health scoring. This example contains no actual ticket, customer message, account, transcript, or case history. Identify evidence gaps, policy risks, and a human-reviewed next step; do not send or change anything."
+      },
+      {
+        "label": "Escalation review",
+        "value": "Assess a fictional Customer health scoring scenario. Separate verified case facts from assumptions, identify the escalation owner and source policy needed, and prepare a draft only for human review. Do not include personal or payment data."
+      },
+      {
+        "label": "Quality assurance",
+        "value": "Prepare a supervisor review for Customer health scoring. State what is known, what remains unverified, and what approval or follow-up is needed before an agent acts. No customer or case records are included in this example."
+      }
+    ]
+  },
+  {
+    "name": "MultiLingualSupportAutomationPage",
+    "id": "cf-multi-lingual-support-automation",
+    "title": "Multi-lingual support automation",
+    "description": "Prepare an advisory for multi-lingual support automation using only the case details and policy sources that you provide. Protect customer privacy, separate verified facts from assumptions, identify escalation and approval needs, and do not send messages, change accounts, or make commitments.",
+    "samples": [
+      {
+        "label": "Ticket triage",
+        "value": "Review the provided support issue for Multi-lingual support automation. This example contains no actual ticket, customer message, account, transcript, or case history. Identify evidence gaps, policy risks, and a human-reviewed next step; do not send or change anything."
+      },
+      {
+        "label": "Escalation review",
+        "value": "Assess a fictional Multi-lingual support automation scenario. Separate verified case facts from assumptions, identify the escalation owner and source policy needed, and prepare a draft only for human review. Do not include personal or payment data."
+      },
+      {
+        "label": "Quality assurance",
+        "value": "Prepare a supervisor review for Multi-lingual support automation. State what is known, what remains unverified, and what approval or follow-up is needed before an agent acts. No customer or case records are included in this example."
+      }
+    ]
+  },
+  {
+    "name": "PredictiveCustomerChurnPage",
+    "id": "cf-predictive-customer-churn",
+    "title": "Predictive customer churn",
+    "description": "Prepare an advisory for predictive customer churn using only the case details and policy sources that you provide. Protect customer privacy, separate verified facts from assumptions, identify escalation and approval needs, and do not send messages, change accounts, or make commitments.",
+    "samples": [
+      {
+        "label": "Ticket triage",
+        "value": "Review the provided support issue for Predictive customer churn. This example contains no actual ticket, customer message, account, transcript, or case history. Identify evidence gaps, policy risks, and a human-reviewed next step; do not send or change anything."
+      },
+      {
+        "label": "Escalation review",
+        "value": "Assess a fictional Predictive customer churn scenario. Separate verified case facts from assumptions, identify the escalation owner and source policy needed, and prepare a draft only for human review. Do not include personal or payment data."
+      },
+      {
+        "label": "Quality assurance",
+        "value": "Prepare a supervisor review for Predictive customer churn. State what is known, what remains unverified, and what approval or follow-up is needed before an agent acts. No customer or case records are included in this example."
+      }
+    ]
+  },
+  {
+    "name": "ProactiveSupportTriggersPage",
+    "id": "cf-proactive-support-triggers",
+    "title": "Proactive support triggers",
+    "description": "Prepare an advisory for proactive support triggers using only the case details and policy sources that you provide. Protect customer privacy, separate verified facts from assumptions, identify escalation and approval needs, and do not send messages, change accounts, or make commitments.",
+    "samples": [
+      {
+        "label": "Ticket triage",
+        "value": "Review the provided support issue for Proactive support triggers. This example contains no actual ticket, customer message, account, transcript, or case history. Identify evidence gaps, policy risks, and a human-reviewed next step; do not send or change anything."
+      },
+      {
+        "label": "Escalation review",
+        "value": "Assess a fictional Proactive support triggers scenario. Separate verified case facts from assumptions, identify the escalation owner and source policy needed, and prepare a draft only for human review. Do not include personal or payment data."
+      },
+      {
+        "label": "Quality assurance",
+        "value": "Prepare a supervisor review for Proactive support triggers. State what is known, what remains unverified, and what approval or follow-up is needed before an agent acts. No customer or case records are included in this example."
+      }
+    ]
+  },
+  {
+    "name": "CallsVoiceLackAnalyzeCallSentimentOrExtractCallTranPage",
+    "id": "gap-calls-voice-lack-analyze-call-sentiment-or-extract-call-tran",
+    "title": "`calls`, `voice` lack `/analyze-call-sentiment` or `/extract-call-transcript`.",
+    "description": "Prepare an advisory for `calls`, `voice` lack `/analyze-call-sentiment` or `/extract-call-transcript`. using only the case details and policy sources that you provide. Protect customer privacy, separate verified facts from assumptions, identify escalation and approval needs, and do not send messages, change accounts, or make commitments.",
+    "samples": [
+      {
+        "label": "Ticket triage",
+        "value": "Review the provided support issue for `calls`, `voice` lack `/analyze-call-sentiment` or `/extract-call-transcript`.. This example contains no actual ticket, customer message, account, transcript, or case history. Identify evidence gaps, policy risks, and a human-reviewed next step; do not send or change anything."
+      },
+      {
+        "label": "Escalation review",
+        "value": "Assess a fictional `calls`, `voice` lack `/analyze-call-sentiment` or `/extract-call-transcript`. scenario. Separate verified case facts from assumptions, identify the escalation owner and source policy needed, and prepare a draft only for human review. Do not include personal or payment data."
+      },
+      {
+        "label": "Quality assurance",
+        "value": "Prepare a supervisor review for `calls`, `voice` lack `/analyze-call-sentiment` or `/extract-call-transcript`.. State what is known, what remains unverified, and what approval or follow-up is needed before an agent acts. No customer or case records are included in this example."
+      }
+    ]
+  },
+  {
+    "name": "CannedresponsesLacksAutoGenerateCannedResponsePage",
+    "id": "gap-cannedresponses-lacks-auto-generate-canned-response",
+    "title": "`cannedResponses` lacks `/auto-generate-canned-response`.",
+    "description": "Prepare an advisory for `cannedresponses` lacks `/auto-generate-canned-response`. using only the case details and policy sources that you provide. Protect customer privacy, separate verified facts from assumptions, identify escalation and approval needs, and do not send messages, change accounts, or make commitments.",
+    "samples": [
+      {
+        "label": "Ticket triage",
+        "value": "Review the provided support issue for `cannedResponses` lacks `/auto-generate-canned-response`.. This example contains no actual ticket, customer message, account, transcript, or case history. Identify evidence gaps, policy risks, and a human-reviewed next step; do not send or change anything."
+      },
+      {
+        "label": "Escalation review",
+        "value": "Assess a fictional `cannedResponses` lacks `/auto-generate-canned-response`. scenario. Separate verified case facts from assumptions, identify the escalation owner and source policy needed, and prepare a draft only for human review. Do not include personal or payment data."
+      },
+      {
+        "label": "Quality assurance",
+        "value": "Prepare a supervisor review for `cannedResponses` lacks `/auto-generate-canned-response`.. State what is known, what remains unverified, and what approval or follow-up is needed before an agent acts. No customer or case records are included in this example."
+      }
+    ]
+  },
+  {
+    "name": "CategoriesTagsLackMlBasedAutoTaggingPage",
+    "id": "gap-categories-tags-lack-ml-based-auto-tagging",
+    "title": "`categories`, `tags` lack ML-based auto-tagging.",
+    "description": "Prepare an advisory for `categories`, `tags` lack ml-based auto-tagging. using only the case details and policy sources that you provide. Protect customer privacy, separate verified facts from assumptions, identify escalation and approval needs, and do not send messages, change accounts, or make commitments.",
+    "samples": [
+      {
+        "label": "Ticket triage",
+        "value": "Review the provided support issue for `categories`, `tags` lack ML-based auto-tagging.. This example contains no actual ticket, customer message, account, transcript, or case history. Identify evidence gaps, policy risks, and a human-reviewed next step; do not send or change anything."
+      },
+      {
+        "label": "Escalation review",
+        "value": "Assess a fictional `categories`, `tags` lack ML-based auto-tagging. scenario. Separate verified case facts from assumptions, identify the escalation owner and source policy needed, and prepare a draft only for human review. Do not include personal or payment data."
+      },
+      {
+        "label": "Quality assurance",
+        "value": "Prepare a supervisor review for `categories`, `tags` lack ML-based auto-tagging.. State what is known, what remains unverified, and what approval or follow-up is needed before an agent acts. No customer or case records are included in this example."
+      }
+    ]
+  },
+  {
+    "name": "LimitedCrmIntegrationNoSalesforceHubspotAdapterPage",
+    "id": "gap-limited-crm-integration-no-salesforce-hubspot-adapter",
+    "title": "Limited CRM integration — no Salesforce/HubSpot adapter.",
+    "description": "Prepare an advisory for limited crm integration — no salesforce/hubspot adapter. using only the case details and policy sources that you provide. Protect customer privacy, separate verified facts from assumptions, identify escalation and approval needs, and do not send messages, change accounts, or make commitments.",
+    "samples": [
+      {
+        "label": "Ticket triage",
+        "value": "Review the provided support issue for Limited CRM integration — no Salesforce/HubSpot adapter.. This example contains no actual ticket, customer message, account, transcript, or case history. Identify evidence gaps, policy risks, and a human-reviewed next step; do not send or change anything."
+      },
+      {
+        "label": "Escalation review",
+        "value": "Assess a fictional Limited CRM integration — no Salesforce/HubSpot adapter. scenario. Separate verified case facts from assumptions, identify the escalation owner and source policy needed, and prepare a draft only for human review. Do not include personal or payment data."
+      },
+      {
+        "label": "Quality assurance",
+        "value": "Prepare a supervisor review for Limited CRM integration — no Salesforce/HubSpot adapter.. State what is known, what remains unverified, and what approval or follow-up is needed before an agent acts. No customer or case records are included in this example."
+      }
+    ]
+  },
+  {
+    "name": "LimitedWorkflowAutomationAutoEscalationAutoCloseAutoPage",
+    "id": "gap-limited-workflow-automation-auto-escalation-auto-close-auto",
+    "title": "Limited workflow automation (auto-escalation, auto-close, auto-notify) beyond stubs.",
+    "description": "Prepare an advisory for limited workflow automation (auto-escalation, auto-close, auto-notify) beyond stubs. using only the case details and policy sources that you provide. Protect customer privacy, separate verified facts from assumptions, identify escalation and approval needs, and do not send messages, change accounts, or make commitments.",
+    "samples": [
+      {
+        "label": "Ticket triage",
+        "value": "Review the provided support issue for Limited workflow automation (auto-escalation, auto-close, auto-notify) beyond stubs.. This example contains no actual ticket, customer message, account, transcript, or case history. Identify evidence gaps, policy risks, and a human-reviewed next step; do not send or change anything."
+      },
+      {
+        "label": "Escalation review",
+        "value": "Assess a fictional Limited workflow automation (auto-escalation, auto-close, auto-notify) beyond stubs. scenario. Separate verified case facts from assumptions, identify the escalation owner and source policy needed, and prepare a draft only for human review. Do not include personal or payment data."
+      },
+      {
+        "label": "Quality assurance",
+        "value": "Prepare a supervisor review for Limited workflow automation (auto-escalation, auto-close, auto-notify) beyond stubs.. State what is known, what remains unverified, and what approval or follow-up is needed before an agent acts. No customer or case records are included in this example."
+      }
+    ]
+  },
+  {
+    "name": "NoLiveChatWidgetForWebsiteEmbeddingPage",
+    "id": "gap-no-live-chat-widget-for-website-embedding",
+    "title": "live chat widget for website embedding.",
+    "description": "Prepare an advisory for live chat widget for website embedding. using only the case details and policy sources that you provide. Protect customer privacy, separate verified facts from assumptions, identify escalation and approval needs, and do not send messages, change accounts, or make commitments.",
+    "samples": [
+      {
+        "label": "Ticket triage",
+        "value": "Review the provided support issue for live chat widget for website embedding.. This example contains no actual ticket, customer message, account, transcript, or case history. Identify evidence gaps, policy risks, and a human-reviewed next step; do not send or change anything."
+      },
+      {
+        "label": "Escalation review",
+        "value": "Assess a fictional live chat widget for website embedding. scenario. Separate verified case facts from assumptions, identify the escalation owner and source policy needed, and prepare a draft only for human review. Do not include personal or payment data."
+      },
+      {
+        "label": "Quality assurance",
+        "value": "Prepare a supervisor review for live chat widget for website embedding.. State what is known, what remains unverified, and what approval or follow-up is needed before an agent acts. No customer or case records are included in this example."
+      }
+    ]
+  },
+  {
+    "name": "NoPaymentBillingModuleExposedStripeOnlyStubbedPage",
+    "id": "gap-no-payment-billing-module-exposed-stripe-only-stubbed",
+    "title": "payment/billing module exposed (Stripe only stubbed).",
+    "description": "Prepare an advisory for payment/billing module exposed (stripe only stubbed). using only the case details and policy sources that you provide. Protect customer privacy, separate verified facts from assumptions, identify escalation and approval needs, and do not send messages, change accounts, or make commitments.",
+    "samples": [
+      {
+        "label": "Ticket triage",
+        "value": "Review the provided support issue for payment/billing module exposed (Stripe only stubbed).. This example contains no actual ticket, customer message, account, transcript, or case history. Identify evidence gaps, policy risks, and a human-reviewed next step; do not send or change anything."
+      },
+      {
+        "label": "Escalation review",
+        "value": "Assess a fictional payment/billing module exposed (Stripe only stubbed). scenario. Separate verified case facts from assumptions, identify the escalation owner and source policy needed, and prepare a draft only for human review. Do not include personal or payment data."
+      },
+      {
+        "label": "Quality assurance",
+        "value": "Prepare a supervisor review for payment/billing module exposed (Stripe only stubbed).. State what is known, what remains unverified, and what approval or follow-up is needed before an agent acts. No customer or case records are included in this example."
+      }
+    ]
+  }
+]

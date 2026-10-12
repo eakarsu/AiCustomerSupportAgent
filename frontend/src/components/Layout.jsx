@@ -1,3 +1,4 @@
+import AIReportLibrary from "./AIReportLibrary";
 import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import {
@@ -241,7 +242,7 @@ function Layout() {
           <X className="w-5 h-5 text-gray-500" />
         </button>
         <SidebarContent />
-      </aside>
+      <AIReportLibrary /></aside>
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto pt-14 md:pt-0">

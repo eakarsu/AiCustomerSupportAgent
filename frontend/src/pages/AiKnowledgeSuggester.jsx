@@ -1,3 +1,5 @@
+
+import FullAIExamples, { useFullAIExamples } from "../components/FullAIExamples.jsx";
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -29,6 +31,8 @@ const SAMPLE_QUERIES = [
 ];
 
 function AiKnowledgeSuggester() {
+  const fullAIExamples = useFullAIExamples();
+
   const navigate = useNavigate();
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -343,7 +347,7 @@ function AiKnowledgeSuggester() {
                 </div>
               </div>
 
-              <form onSubmit={handleSuggest} className="space-y-4">
+              <form onSubmit={handleSuggest} className="space-y-4" data-full-ai-workspace="AiKnowledgeSuggester"><FullAIExamples controller={fullAIExamples} disabled={Boolean(loading)} />
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Your Question</label>
                   <textarea
@@ -352,7 +356,7 @@ function AiKnowledgeSuggester() {
                     placeholder="What would you like to know? e.g., 'How do I reset my password?'"
                     rows={3}
                     className="input-field"
-                    required
+                    required data-full-ai-field={fullAIExamples.bind({ current: query, change: (e) => setQuery(e.target.value), label: "query", manual: false, json: false, sample: '' }, "p1-14054", undefined)}
                   />
                 </div>
                 <button

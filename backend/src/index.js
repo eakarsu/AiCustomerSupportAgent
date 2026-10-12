@@ -1,3 +1,7 @@
+import { authenticate as aiWorkspaceDependency1 } from "./middleware/auth.js";
+import aiWorkspaceDependency2 from "../aiWorkspaceAdapters.cjs";
+import aiWorkspaceDependency3 from "../aiWorkspace.cjs";
+import { readFileSync as readAIWorkspaceFile } from 'node:fs';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
@@ -43,6 +47,15 @@ app.use('/api/authoritative/support/webhooks',webhookRoutes);
 app.use('/api/ai',authenticate,checkBlacklist,runtimeAi);
 app.use('/api/authoritative/support',authenticate,checkBlacklist,authoritative);
 app.use('/api/authoritative/support/workforce-transition',authenticate,checkBlacklist,workforceTransition);
+
+// Advisory AI reports only; native execution and approval routes stay unchanged.
+const aiWorkspaceSupport = aiWorkspaceDependency2;
+const aiWorkspaceFeatures = JSON.parse(readAIWorkspaceFile(new URL("../aiWorkspaceFeatures.json", import.meta.url), 'utf8'));
+const aiWorkspaceDatabase = aiWorkspaceSupport.prismaQueryClient(prisma);
+app.use('/api/report-workspace', aiWorkspaceDependency3.createAIWorkspaceRouter({
+  pool: aiWorkspaceDatabase, authenticateToken: aiWorkspaceDependency1,
+  aiRateLimiter: aiWorkspaceSupport.createWorkspaceLimiter(), features: aiWorkspaceFeatures,
+}));
 app.use('/api', authenticate, checkBlacklist, (_req, res) => res.status(410).json({ error: 'legacy_route_quarantined', replacement: '/api/authoritative/support' }));
 app.use((err, _req, res, _next) => {
   console.error(err.message);
